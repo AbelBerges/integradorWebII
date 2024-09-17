@@ -1,0 +1,35 @@
+{
+  "name": "typeorm3",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "ts-node-dev --respawn src/index.ts",
+    "build": "tsc",
+    "start": "node build/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/method-override": "^0.0.35",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.5.4",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.6.2"
+  },
+  "dependencies": {
+    "@types/dotenv": "^6.1.1",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "glob": "^11.0.0",
+    "inflight": "^1.0.6",
+    "method-override": "^3.0.0",
+    "morgan": "^1.10.0",
+    "pug": "^3.0.3",
+    "rimraf": "^6.0.1"
+  }
+}
