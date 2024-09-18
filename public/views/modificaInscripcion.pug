@@ -17,11 +17,15 @@ block contenido
                     - var elestudianteid = `${inscripcion.estudiante_id}`;
                     div 
                         label.block.text-sm.uppercase.text-gray-500.mb-3.font-bold(for="curso_id") Curso
-                        label.block.text-sm.uppercase.text-gray-500.mb-3.font-bold #{elcursoid}
+                        each curso in cursos 
+                            if (curso.id == elcursoid)
+                                label.block.text-sm.uppercase.text-gray-800.mb-3.font-bold #{curso.nombre}
 
                     div 
                         label.block.text-sm.uppercase.text-gray-500.mb-3.font-bold(for="estudiante_id") Estudiante
-                        label.block.text-sm.uppercase.text-gray-500.mb-3.font-bold #{elestudianteid}
+                        each estudiante in estudiantes 
+                            if (estudiante.id == elestudianteid)
+                                label.block.text-sm.uppercase.text-gray-800.mb-3.font-bold #{unEstudiante}
 
                     div 
                         label.block.text-sm.uppercase.text-gray-500.mb-3.font-bold(for="nota") Nota

@@ -9,16 +9,20 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.eliminar = exports.modificar = exports.insertar = exports.buscarxProfesor = exports.consultarUno = exports.consultarTodos = void 0;
+exports.eliminar = exports.modificar = exports.insertar = exports.buscarxProfesor = exports.consultarUno = exports.buscarCursos = exports.consultarTodos = void 0;
 const conection_1 = require("../db/conection");
 const CursoModel_1 = require("../models/CursoModel");
+const ProfesorModel_1 = require("../models/ProfesorModel");
 const cursoRepository = conection_1.AppDataSource.getRepository(CursoModel_1.Curso);
 const consultarTodos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const repoProfe = conection_1.AppDataSource.getRepository(ProfesorModel_1.Profesor);
+        const profesores = yield repoProfe.find();
         const cursos = yield cursoRepository.find();
         res.render('listarCursos', {
             pagina: 'Listado de cursos',
-            cursos
+            cursos,
+            profesores
         });
     }
     catch (err) {
@@ -28,6 +32,23 @@ const consultarTodos = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.consultarTodos = consultarTodos;
+const buscarCursos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const cursos = yield cursoRepository.find();
+        if (cursos) {
+            return cursos;
+        }
+        else {
+            return null;
+        }
+    }
+    catch (err) {
+        if (err instanceof Error) {
+            res.status(500).json(err.message);
+        }
+    }
+});
+exports.buscarCursos = buscarCursos;
 const consultarUno = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const idNum = parseInt(req.params.id);
     try {
@@ -92,6 +113,7 @@ const insertar = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.insertar = insertar;
 const modificar = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        console.log("Ver el contenido de req.body ", req.body);
         const curso = yield cursoRepository.findOneBy({ id: parseInt(req.params.id) });
         if (curso) {
             cursoRepository.merge(curso, req.body);

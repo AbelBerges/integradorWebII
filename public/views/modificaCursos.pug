@@ -23,7 +23,16 @@ block contenido
                         input#descripcion.w.full.px-3.py-2.border.border-gray-300.rounded-mb.placeholder-gray-400(placeholder="Descripcion" type="text" name="descripcion" value=curso.descripcion)
 
                     div 
-                        label.block.text-sm.uppercase.text-gray-500.mb-3.font-bold(for="profesor") Profesor
-                        input#profesor.w.full.px-3.py-2.border.border-gray-300.rounded-mb.placeholder-gray-400(placeholder="Profesor" type="text" name="profesor" value=curso.profesor_id)
+                        label.block.text-sm.uppercase.text-gray-500.mb-3.font-bold Profesor
+                        label.block.text-sm.uppercase.text-gray-500.mb-3.font-bold | #{unProfe}
+
+                    div 
+                        label.block.text-sm.uppercase.text-gray-500.mb-3.font-bold(for="profesor") Elija otro Profesor
+                        select(name="profesor_id")
+                            each profesor in profesores 
+                                if (profesor.id == curso.profesor_id)   
+                                    option(value=profesor.id selected) #{profesor.nombre} #{profesor.apellido}
+                                else 
+                                    option(value=profesor.id) #{profesor.nombre} #{profesor.apellido} 
 
                     button.bg-blue-500.text-white.px-4.py-2.rounded-md.mt-4(type="submit") Modificar Curso  

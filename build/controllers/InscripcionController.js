@@ -11,14 +11,20 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.eliminar = exports.modifica = exports.buscarUno = exports.agregar = exports.buscarxEstudiante = exports.buscaxCurso = exports.buscarTodos = void 0;
 const CursoEstudianteModel_1 = require("../models/CursoEstudianteModel");
+const EstudianteController_1 = require("./EstudianteController");
+const CursoController_1 = require("./CursoController");
 const conection_1 = require("../db/conection");
 const inscripcionRepository = conection_1.AppDataSource.getRepository(CursoEstudianteModel_1.CursoEstudiante);
 const buscarTodos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const estudiantes = yield (0, EstudianteController_1.buscarEstudiantes)(req, res);
+        const cursos = yield (0, CursoController_1.buscarCursos)(req, res);
         const inscripciones = yield inscripcionRepository.find();
         res.render('listarInscripciones', {
             pagina: 'Listado de las inscripciones',
-            inscripciones
+            inscripciones,
+            estudiantes,
+            cursos
         });
     }
     catch (err) {

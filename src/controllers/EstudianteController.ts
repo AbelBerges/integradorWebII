@@ -41,6 +41,36 @@ export const consultarUno = async (req:Request,res:Response): Promise<Estudiante
         //return unEstudiante;
     }
 
+export const buscarUnEstudiante = async (idEst:number, res:Response):Promise<Estudiante | null | undefined>=>{
+    try{
+        const estudiante = await estudianteRepository.findOneBy({id:idEst});
+        if(estudiante){
+            return estudiante;
+        } else {
+            return null;
+        }
+    }catch(err:unknown){
+        if(err instanceof Error){
+            res.render(err.message);
+        }
+    }
+}
+
+export const buscarEstudiantes = async (req:Request,res:Response):Promise<Estudiante[] | null | undefined>=>{
+    try{
+        const estudiantes = await estudianteRepository.find();
+        if(estudiantes){
+            return estudiantes;
+        } else {
+            return null;
+        }
+    } catch(err:unknown){
+        if(err instanceof Error){
+            res.render(err.message);
+        }
+    }
+}
+
 export const insertar = async (req:Request,res:Response):Promise<void>=>{
      const {dni,nombre,apellido,email} = req.body;
         try{

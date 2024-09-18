@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.eliminar = exports.modificar = exports.insertar = exports.consultarUno = exports.consultarTodos = void 0;
+exports.eliminar = exports.modificar = exports.insertar = exports.buscarProfe = exports.buscarUnProfe = exports.consultarUno = exports.consultarTodos = void 0;
 const conection_1 = require("../db/conection");
 const ProfesorModel_1 = require("../models/ProfesorModel");
 const profesorRepository = conection_1.AppDataSource.getRepository(ProfesorModel_1.Profesor);
@@ -45,6 +45,40 @@ const consultarUno = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
 });
 exports.consultarUno = consultarUno;
+const buscarUnProfe = (id, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const profe = yield profesorRepository.findOneBy({ id: id });
+        if (profe) {
+            return profe;
+        }
+        else {
+            return null;
+        }
+    }
+    catch (err) {
+        if (err instanceof Error) {
+            res.render('No s eha encontrado el profesor');
+        }
+    }
+});
+exports.buscarUnProfe = buscarUnProfe;
+const buscarProfe = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const profesores = yield profesorRepository.find();
+        if (profesores) {
+            return profesores;
+        }
+        else {
+            return null;
+        }
+    }
+    catch (err) {
+        if (err instanceof Error) {
+            res.render('No se ha encontrado el profesor');
+        }
+    }
+});
+exports.buscarProfe = buscarProfe;
 const insertar = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { nombre, apellido, email, profesion, telefono } = req.body;
     try {

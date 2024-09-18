@@ -1,6 +1,8 @@
 import express from "express";
 import { Request, Response } from "express";
 import { agregar, buscarTodos, buscaxCurso, eliminar, buscarxEstudiante, modifica, buscarUno } from "../controllers/InscripcionController";
+import { buscarUnEstudiante, buscarEstudiantes } from "../controllers/EstudianteController";
+import { buscarCursos } from "../controllers/CursoController";
 const rutas = express.Router();
 
 
@@ -17,9 +19,16 @@ rutas.get("/modificarInscripcion/:curso_id/:estudiante_id",async (req:Request,re
     try{
         const inscripcion = await buscarUno(req,res);
         if(inscripcion){
+            const estud = await buscarUnEstudiante(inscripcion.estudiante_id,res);
+            var unEstudiante:string = estud?.nombre + ', ' + estud?.apellido;
+            var cursos = await buscarCursos(req,res);
+            var estudiantes = await buscarEstudiantes(req,res);
             res.render('modificaInscripcion',{
                 pagina: 'Modificación de la inscripción',
-                inscripcion
+                inscripcion,
+                cursos,
+                unEstudiante,
+                estudiantes
             });
         } else {
             res.render('No se ha encontrado la inscripción')

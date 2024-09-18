@@ -1,14 +1,19 @@
 import { Request, Response } from "express";
 import { AppDataSource } from "../db/conection";
 import { Curso } from "../models/CursoModel";
+import { buscarProfe, buscarUnProfe } from "../controllers/ProfesorController";
+import { Profesor } from "../models/ProfesorModel";
 
 const cursoRepository = AppDataSource.getRepository(Curso);
 export const consultarTodos = async (req:Request,res:Response):Promise<void>=>{
         try{
+            const repoProfe = AppDataSource.getRepository(Profesor);
+            const profesores = await repoProfe.find();
             const cursos = await cursoRepository.find();
             res.render('listarCursos',{
                 pagina: 'Listado de cursos',
-                cursos
+                cursos,
+                profesores
             })
         }catch(err:unknown){
             if(err instanceof Error){
@@ -16,6 +21,21 @@ export const consultarTodos = async (req:Request,res:Response):Promise<void>=>{
             }
         }
     }
+
+export const buscarCursos = async (req:Request,res:Response):Promise<Curso[] |null |undefined>=>{
+    try{
+        const cursos = await cursoRepository.find();
+        if(cursos){
+            return cursos;
+        } else {
+            return null;
+        }
+    }catch(err:unknown){
+        if(err instanceof Error){
+            res.status(500).json(err.message);
+        }
+    }
+}
 
 export const consultarUno = async (req:Request,res:Response):Promise<Curso | null |undefined>=>{
         const idNum:number = parseInt(req.params.id);
@@ -77,6 +97,7 @@ export const insertar = async (req:Request,res:Response):Promise<void>=>{
 
 export const modificar = async (req:Request,res:Response):Promise<void>=>{
         try{
+           console.log("Ver el contenido de req.body ", req.body);
            const curso = await cursoRepository.findOneBy({id:parseInt(req.params.id)}); 
            if(curso){
             cursoRepository.merge(curso,req.body);

@@ -27,6 +27,7 @@ ruta.get("/modificarEstudiante/:id", (req, res) => __awaiter(void 0, void 0, voi
         const estudiante = yield (0, EstudianteController_1.consultarUno)(req, res);
         if (estudiante) {
             res.render('modificaEstudiante', {
+                pagina: 'Modificación de los datos del Estudiante',
                 estudiante
             });
         }

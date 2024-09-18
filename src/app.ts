@@ -13,7 +13,7 @@ import methodOverride from "method-override";
 const app = expres();
 
 app.set('view engine', 'pug');
-app.set('views', path.join(__dirname, '/views'));
+app.set('views', path.join(__dirname, '../public/views'));
 
 app.use(expres.static('public'));
 app.use(methodOverride('_method'));

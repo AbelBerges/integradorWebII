@@ -14,6 +14,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const InscripcionController_1 = require("../controllers/InscripcionController");
+const EstudianteController_1 = require("../controllers/EstudianteController");
+const CursoController_1 = require("../controllers/CursoController");
 const rutas = express_1.default.Router();
 rutas.get("/listarInscripciones", InscripcionController_1.buscarTodos);
 rutas.get("/creaInscripciones", (req, res) => {
@@ -26,9 +28,16 @@ rutas.get("/modificarInscripcion/:curso_id/:estudiante_id", (req, res) => __awai
     try {
         const inscripcion = yield (0, InscripcionController_1.buscarUno)(req, res);
         if (inscripcion) {
+            const estud = yield (0, EstudianteController_1.buscarUnEstudiante)(inscripcion.estudiante_id, res);
+            var unEstudiante = (estud === null || estud === void 0 ? void 0 : estud.nombre) + ', ' + (estud === null || estud === void 0 ? void 0 : estud.apellido);
+            var cursos = yield (0, CursoController_1.buscarCursos)(req, res);
+            var estudiantes = yield (0, EstudianteController_1.buscarEstudiantes)(req, res);
             res.render('modificaInscripcion', {
                 pagina: 'Modificación de la inscripción',
-                inscripcion
+                inscripcion,
+                cursos,
+                unEstudiante,
+                estudiantes
             });
         }
         else {
@@ -41,7 +50,7 @@ rutas.get("/modificarInscripcion/:curso_id/:estudiante_id", (req, res) => __awai
         }
     }
 }));
-rutas.put("/:curso_id/:estudiante_id", InscripcionController_1.modifica);
+rutas.route("/:curso_id/:estudiante_id").put(InscripcionController_1.modifica);
 rutas.get("/xCurso/:id", InscripcionController_1.buscaxCurso);
 rutas.get("/xEstudiante/:id", InscripcionController_1.buscarxEstudiante);
 rutas.route("/:id")

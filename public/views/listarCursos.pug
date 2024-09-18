@@ -21,8 +21,10 @@ block contenido
                 each curso in cursos 
                     tr 
                         td.px-6.py-4= curso.nombre
-                        td.px-6.py-4= curso.apellido 
-                        td.px-6.py-4= curso.profesor_id   
+                        td.px-6.py-4= curso.descripcion
+                        each profesor in profesores
+                            if (profesor.id == curso.profesor_id)
+                                  td.px-6.py-4= `${profesor.nombre} ${profesor.apellido}  `
                         td.px-6.py-4: a.text-blue-500(href=`/cursos/modificarCurso/${curso.id} `) Editar curso
                                       a.text-blue-500.ml-2(href="#" onclic=`eliminarCurso${'curso.id'} `) Eliminar profesor 
 

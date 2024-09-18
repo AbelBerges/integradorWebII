@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const CursoController_1 = require("../controllers/CursoController");
+const ProfesorController_1 = require("../controllers/ProfesorController");
 const rutas = express_1.default.Router();
 rutas.get("/listarCursos", CursoController_1.consultarTodos);
 rutas.get("/creaCursos", (req, res) => {
@@ -27,13 +28,18 @@ rutas.get("/modificarCurso/:id", (req, res) => __awaiter(void 0, void 0, void 0,
     try {
         const curso = yield (0, CursoController_1.consultarUno)(req, res);
         if (curso) {
+            const elProfe = yield (0, ProfesorController_1.buscarUnProfe)(curso.profesor_id, res);
+            var unProfe = (elProfe === null || elProfe === void 0 ? void 0 : elProfe.nombre) + ', ' + (elProfe === null || elProfe === void 0 ? void 0 : elProfe.apellido);
+            var profesores = yield (0, ProfesorController_1.buscarProfe)(req, res);
             res.render('modificaCursos', {
                 pagina: 'Modificación del Profesor',
-                curso
+                curso,
+                profesores,
+                unProfe
             });
         }
         else {
-            res.render('No se ha encontrado el estudiante');
+            res.render('No se ha encontrado el curso');
         }
     }
     catch (err) {

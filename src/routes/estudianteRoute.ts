@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import express from "express";
-import { consultarTodos, consultarUno, eliminar, insertar, modificar } from "../controllers/EstudianteController";
+import { consultarTodos, consultarUno, eliminar, insertar, modificar, buscarUnEstudiante } from "../controllers/EstudianteController";
 const ruta = express.Router();
 
 
@@ -18,6 +18,7 @@ ruta.get("/modificarEstudiante/:id", async (req:Request, res:Response)=>{
         const estudiante = await consultarUno(req,res);
         if(estudiante){
             res.render('modificaEstudiante',{
+                pagina: 'Modificación de los datos del Estudiante',
                 estudiante
             });
         } else {

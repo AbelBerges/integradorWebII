@@ -1,13 +1,19 @@
 import { Request, Response } from "express";
 import { CursoEstudiante } from "../models/CursoEstudianteModel";
+import { buscarEstudiantes } from "./EstudianteController";
+import { buscarCursos } from "./CursoController";
 import { AppDataSource } from "../db/conection";
 const inscripcionRepository = AppDataSource.getRepository(CursoEstudiante);
 export const buscarTodos = async (req:Request,res:Response):Promise<void>=>{
         try{
+            const estudiantes = await buscarEstudiantes(req,res);
+            const cursos = await buscarCursos(req,res);
             const inscripciones = await inscripcionRepository.find();
             res.render('listarInscripciones',{
                 pagina: 'Listado de las inscripciones',
-                inscripciones
+                inscripciones,
+                estudiantes,
+                cursos
             });
         }catch(err:unknown){
             if(err instanceof Error){

@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.eliminar = exports.modificar = exports.insertar = exports.consultarUno = exports.consultarTodos = void 0;
+exports.eliminar = exports.modificar = exports.insertar = exports.buscarEstudiantes = exports.buscarUnEstudiante = exports.consultarUno = exports.consultarTodos = void 0;
 const conection_1 = require("../db/conection");
 const EstudianteModel_1 = require("../models/EstudianteModel");
 const estudianteRepository = conection_1.AppDataSource.getRepository(EstudianteModel_1.Estudiante);
@@ -52,6 +52,40 @@ const consultarUno = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     //return unEstudiante;
 });
 exports.consultarUno = consultarUno;
+const buscarUnEstudiante = (idEst, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const estudiante = yield estudianteRepository.findOneBy({ id: idEst });
+        if (estudiante) {
+            return estudiante;
+        }
+        else {
+            return null;
+        }
+    }
+    catch (err) {
+        if (err instanceof Error) {
+            res.render(err.message);
+        }
+    }
+});
+exports.buscarUnEstudiante = buscarUnEstudiante;
+const buscarEstudiantes = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const estudiantes = yield estudianteRepository.find();
+        if (estudiantes) {
+            return estudiantes;
+        }
+        else {
+            return null;
+        }
+    }
+    catch (err) {
+        if (err instanceof Error) {
+            res.render(err.message);
+        }
+    }
+});
+exports.buscarEstudiantes = buscarEstudiantes;
 const insertar = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { dni, nombre, apellido, email } = req.body;
     try {

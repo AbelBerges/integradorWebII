@@ -20,8 +20,12 @@ block contenido
             tbody 
                 each inscripcion in inscripciones
                     tr 
-                        td.px-6.py-4= inscripcion.curso_id
-                        td.px-6.py-4= inscripcion.estudiante_id
+                        each curso in cursos 
+                            if (curso.id == inscripcion.curso_id)
+                                td.px-6.py-4= `${curso.nombre}`
+                        each estudiante in estudiantes 
+                            if (estudiante.id == inscripcion.estudiante_id)
+                                td.px-6.py-4= `${estudiante.nombre} ${estudiante.apellido}`
                         td.px-6.py-4= inscripcion.nota
                         td.px-6.py-4: a.text-blue-500(href=`/inscripciones/modificarInscripcion/${inscripcion.curso_id}/${inscripcion.estudiante_id}`) Editar inscripción
                                       a.text-blue-500.ml-2(href="#" onclic=`eliminarInscripcion${'inscripcion.curso_id'}/${'inscripcion.estudiante_id'}`) Eliminar inscripción

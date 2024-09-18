@@ -32,6 +32,36 @@ export const consultarUno = async (req:Request,res:Response):Promise<Profesor |n
         }
     }
 
+export const buscarUnProfe = async (id:number,res:Response):Promise<Profesor | null | undefined>=>{
+    try{
+        const profe = await profesorRepository.findOneBy({id:id});
+        if(profe){
+            return profe;
+        } else {
+            return null;
+        }
+    } catch (err:unknown){
+        if(err instanceof Error){
+            res.render('No s eha encontrado el profesor');
+        }
+    }
+}
+
+export const buscarProfe = async (req:Request,res:Response):Promise<Profesor[] |null |undefined>=>{
+    try{
+        const profesores = await profesorRepository.find();
+        if(profesores){
+            return profesores;
+        } else {
+            return null;
+        }
+    }catch(err:unknown){
+        if(err instanceof Error){
+            res.render('No se ha encontrado el profesor');
+        }
+    }
+}
+
  export const insertar = async (req:Request,res:Response):Promise<void>=>{
     const {nombre,apellido,email,profesion,telefono} =req.body;
         try{
