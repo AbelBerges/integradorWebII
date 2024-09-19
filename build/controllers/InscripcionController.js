@@ -88,10 +88,14 @@ const agregar = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 const resultado = yield inscripcionRepository.save(agregar);
             }
         }));
+        const estudiantes = yield (0, EstudianteController_1.buscarEstudiantes)(req, res);
+        const cursos = yield (0, CursoController_1.buscarCursos)(req, res);
         const inscripciones = yield inscripcionRepository.find();
         res.render('listarInscripciones', {
-            pagina: 'Listar Inscxripciones',
-            inscripciones
+            pagina: 'Listar Inscripciones',
+            inscripciones,
+            estudiantes,
+            cursos
         });
     }
     catch (err) {

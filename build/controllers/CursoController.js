@@ -98,10 +98,13 @@ const insertar = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 const agregar = yield cursoRepository.save(curso);
             }
         }));
+        const repoProfe = conection_1.AppDataSource.getRepository(ProfesorModel_1.Profesor);
+        const profesores = yield repoProfe.find();
         const cursos = yield cursoRepository.find();
         res.render('listarCursos', {
             pagina: 'Listado de Cursos',
-            cursos
+            cursos,
+            profesores
         });
     }
     catch (err) {

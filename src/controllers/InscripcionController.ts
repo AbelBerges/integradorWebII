@@ -73,10 +73,14 @@ export const agregar = async (req:Request,res:Response):Promise<void>=>{
                     const resultado = await inscripcionRepository.save(agregar);      
                 }
             });
+            const estudiantes = await buscarEstudiantes(req,res);
+            const cursos = await buscarCursos(req,res);
             const inscripciones = await inscripcionRepository.find();
             res.render('listarInscripciones',{
-                pagina: 'Listar Inscxripciones',
-                inscripciones
+                pagina: 'Listar Inscripciones',
+                inscripciones,
+                estudiantes,
+                cursos
             })
         }catch(err:unknown){
             if(err instanceof Error){

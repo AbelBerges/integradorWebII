@@ -17,11 +17,20 @@ const CursoController_1 = require("../controllers/CursoController");
 const ProfesorController_1 = require("../controllers/ProfesorController");
 const rutas = express_1.default.Router();
 rutas.get("/listarCursos", CursoController_1.consultarTodos);
-rutas.get("/creaCursos", (req, res) => {
-    res.render('creaCursos', {
-        pagina: 'Crear cursos'
-    });
-});
+rutas.get("/creaCursos", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const profesores = yield (0, ProfesorController_1.buscarProfe)(req, res);
+        res.render('creaCursos', {
+            pagina: 'Crear cursos',
+            profesores
+        });
+    }
+    catch (err) {
+        if (err instanceof Error) {
+            res.status(500).json(err.message);
+        }
+    }
+}));
 rutas.post("/", CursoController_1.insertar);
 //rutas.get("/xProfesor/:id",cursoControlador.buscarxProfesor);
 rutas.get("/modificarCurso/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {

@@ -8,11 +8,22 @@ const rutas = express.Router();
 
 rutas.get("/listarInscripciones",buscarTodos);
 
-rutas.get("/creaInscripciones",(req:Request,res:Response)=>{
-    res.render('creaInscripciones',{
-        pagina: 'Creación de Inscripciones'
-    })
-})
+rutas.get("/creaInscripciones", async(req:Request,res:Response)=>{
+    try{
+        const estudiantes = await buscarEstudiantes(req,res);
+        const cursos = await buscarCursos(req,res);
+        res.render('creaInscripciones',{
+            pagina: 'Creación de Inscripciones',
+            estudiantes,
+            cursos
+        })
+    } catch (err:unknown){
+        if(err instanceof Error){
+            res.status(500).json(err.message);
+        }
+    }
+    
+});
 rutas.post("/",agregar);
 
 rutas.get("/modificarInscripcion/:curso_id/:estudiante_id",async (req:Request,res:Response)=>{

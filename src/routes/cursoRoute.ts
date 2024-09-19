@@ -6,16 +6,22 @@ const rutas = express.Router();
 
 rutas.get("/listarCursos",consultarTodos);
 
-rutas.get("/creaCursos",(req:Request,res:Response)=>{
-     res.render('creaCursos',{
-          pagina: 'Crear cursos'
-     });
+rutas.get("/creaCursos",async (req:Request,res:Response)=>{
+     try{
+          const profesores = await buscarProfe(req,res);
+          res.render('creaCursos',{
+               pagina: 'Crear cursos',
+               profesores
+          });
+     } catch(err:unknown){
+          if(err instanceof Error){
+               res.status(500).json(err.message);
+          }
+     }
 });
 
 rutas.post("/",insertar);
 //rutas.get("/xProfesor/:id",cursoControlador.buscarxProfesor);
-
-
 
 rutas.get("/modificarCurso/:id", async (req:Request,res:Response)=>{
      try{

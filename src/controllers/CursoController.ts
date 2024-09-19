@@ -83,11 +83,14 @@ export const insertar = async (req:Request,res:Response):Promise<void>=>{
                 }
                 
             });
+            const repoProfe = AppDataSource.getRepository(Profesor);
+            const profesores = await repoProfe.find();
             const cursos = await cursoRepository.find();
             res.render('listarCursos',{
                 pagina: 'Listado de Cursos',
-                cursos
-            })
+                cursos,
+                profesores
+            });
         }catch(err:unknown){
             if(err instanceof Error){
                 res.status(500).send(err.message);
