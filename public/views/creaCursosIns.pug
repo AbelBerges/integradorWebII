@@ -1,10 +1,6 @@
 extends ./index
 
 block contenido
-    .flex.justify-end.mb-4
-        ul.flex.space-x-4
-            li 
-                a(href="/profesores/creaProfesoresCurso" class="text-green-600 hover:text-green-800") Agregar Profesor
     .py-10
         h1.text-4xl.my-10.font-extrabold.text-center Proyecto
             span.font-normal Universidad
@@ -17,7 +13,7 @@ block contenido
 
         .mt-8.mx-auto.max-w-md
             .bg-white.py-8.px-4.shadow
-                form.space-y-5(method='POST' action='/cursos' noValidate)
+                form.space-y-5(method='POST' action='/cursos/xIns' noValidate)
                     div
                         label.block.text-sm.uppercase.text-gray-500.mb-3.font-bold(for="nombre") Nombre
                         input#nombrew-full-px-3.py-2.border.border-gray-300.rounded-md.placeholder-gray-400(placeholder="Nombre" type="text" name="nombre" value=curso? curso.nombre: '')

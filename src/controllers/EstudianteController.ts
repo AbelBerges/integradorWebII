@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { AppDataSource } from "../db/conection";
 import { Estudiante } from "../models/EstudianteModel";
-
+import { buscarCursos } from "./CursoController";
 const estudianteRepository = AppDataSource.getRepository(Estudiante);
 
 
@@ -96,6 +96,36 @@ export const insertar = async (req:Request,res:Response):Promise<void>=>{
             }
         }
     }
+
+    export const insertarxIns = async (req:Request,res:Response):Promise<Estudiante[] | null |undefined>=>{
+        const {dni,nombre,apellido,email} = req.body;
+           try{
+               await AppDataSource.transaction(async (transactionalEntityManager) =>{
+                   const estudianteRepository = transactionalEntityManager.getRepository(Estudiante);
+                   const existe = await estudianteRepository.findOne({where:[{dni},{email}]});
+                   //const existe = await estudianteRepository.findOne({where: {id:idNumber}});
+                   if(existe){
+                       throw new Error('El estudiante ya existe');
+                   } else {
+                       const insertar = estudianteRepository.create({dni,nombre,apellido,email});
+                       const resultado = await estudianteRepository.save(insertar);
+                   }
+               });
+               const estudiantes = await estudianteRepository.find();
+               const cursos = await buscarCursos(req,res);
+               res.render('creaInscripciones',{
+                   pagina: 'Creación de Inscripciones',
+                   estudiantes,
+                   cursos
+               });
+               return estudiantes;
+           }catch(err:unknown){
+               if(err instanceof Error){
+                   res.status(500).send(err.message);
+               }
+           }
+       }
+
 
 export const modificar = async (req:Request,res:Response):Promise<void>=>{
         const {dni,nombre,apellido,email} = req.body;

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import express from "express";
-import { consultarTodos, consultarUno, eliminar, insertar, modificar } from "../controllers/ProfesorController";
+import { consultarTodos, consultarUno, eliminar, insertar, modificar, insertarxCurso } from "../controllers/ProfesorController";
 const rutas = express.Router();
 
 
@@ -13,6 +13,14 @@ rutas.get("/creaProfesores",(req:Request,res:Response)=>{
 });
 rutas.post("/",insertar);
 
+rutas.get("/creaProfesoresCurso", async (req:Request,res:Response)=>{
+    res.render('creaProfesoresCurso',{
+        pagina: 'Crear Profesor'
+    })
+})
+
+
+rutas.post("/xCursos",insertarxCurso)
 
 rutas.get("/modificarProfesor/:id", async (req:Request, res:Response)=>{
      try{

@@ -42,7 +42,7 @@ export const buscarUnProfe = async (id:number,res:Response):Promise<Profesor | n
         }
     } catch (err:unknown){
         if(err instanceof Error){
-            res.render('No s eha encontrado el profesor');
+            res.render('No se ha encontrado el profesor');
         }
     }
 }
@@ -87,6 +87,34 @@ export const buscarProfe = async (req:Request,res:Response):Promise<Profesor[] |
             }
         }
     }
+
+
+    export const insertarxCurso = async (req:Request,res:Response):Promise<void>=>{
+        const {nombre,apellido,email,profesion,telefono} =req.body;
+            try{
+                await AppDataSource.transaction(async(transactionalEntityManager)=>{
+                    const profesorRepository = transactionalEntityManager.getRepository(Profesor);
+                    const profesor = await profesorRepository.findOne({where:[{email}]});
+                    if(profesor){
+                        res.render('El profesor ya existe');
+                    } else {
+                        const agrego = profesorRepository.create({nombre,apellido,email,profesion,telefono});
+                        const insertar = await profesorRepository.save(agrego);
+                    }
+                })
+                const profesores = await profesorRepository.find();
+                res.render('creaCursos',{
+                    pagina: 'Crear un Profesor',
+                    profesores
+                });
+                
+            }catch(err:unknown){
+                if(err instanceof Error){
+                    res.render(`Ha ocurrido un error ${err.message}`);
+                }
+            }
+        }
+
 
 export const modificar = async (req:Request,res:Response):Promise<void>=>{
         try{

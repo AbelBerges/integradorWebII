@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import express from "express";
-import { consultarTodos, consultarUno, eliminar, insertar, modificar, buscarUnEstudiante } from "../controllers/EstudianteController";
+import { consultarTodos, consultarUno, eliminar, insertar, modificar, buscarUnEstudiante, insertarxIns } from "../controllers/EstudianteController";
 const ruta = express.Router();
 
 
@@ -12,6 +12,14 @@ ruta.get('/creaEstudiantes',(req:Request,res:Response)=> {
     });
 });
 ruta.post("/",insertar);
+
+ruta.get('/creaEstudiantesIns',(req:Request,res:Response)=>{
+    res.render('creaEstudiantesIns',{
+        pagina: 'Crear Estudiante'
+    })
+})
+
+ruta.post("/xIns", insertarxIns);
 
 ruta.get("/modificarEstudiante/:id", async (req:Request, res:Response)=>{
     try{

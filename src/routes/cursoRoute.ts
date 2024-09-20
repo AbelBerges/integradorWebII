@@ -1,6 +1,6 @@
 import express from "express";
 import { Request, Response } from "express";
-import { consultarTodos, consultarUno, eliminar, insertar, modificar } from "../controllers/CursoController";
+import { consultarTodos, consultarUno, eliminar, insertar, insertarxIns, modificar } from "../controllers/CursoController";
 import { buscarProfe, buscarUnProfe } from "../controllers/ProfesorController";
 const rutas = express.Router();
 
@@ -22,6 +22,16 @@ rutas.get("/creaCursos",async (req:Request,res:Response)=>{
 
 rutas.post("/",insertar);
 //rutas.get("/xProfesor/:id",cursoControlador.buscarxProfesor);
+rutas.get("/creaCursosIns",async (req:Request,res:Response)=>{
+     const profesores = await buscarProfe(req,res);
+     res.render('creaCursosIns',{
+          pagina: 'Crear Curso',
+          profesores
+     })
+})
+
+rutas.post("/xIns",insertarxIns);
+
 
 rutas.get("/modificarCurso/:id", async (req:Request,res:Response)=>{
      try{
