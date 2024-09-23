@@ -1,6 +1,27 @@
-import {Request, Response} from  "express";
+import {NextFunction, Request, Response} from  "express";
 import { AppDataSource } from "../db/conection";
 import { Profesor } from "../models/ProfesorModel";
+import { buscarxProfesor } from "./CursoController";
+import { Curso } from "../models/CursoModel";
+import { check, validationResult } from "express-validator";
+
+export const validarProfe = ()=>[
+    check('nombre').notEmpty().withMessage('El nombre no puede estar vacío').isLength({min:3}),
+    check('apellido').notEmpty().withMessage('El apellido no puede estar vacío').isLength({min:3}),
+    check('email').notEmpty().withMessage('El email no puede estar vacío').isEmail(),
+    check('profesion').notEmpty().withMessage('La profesión no puede estar vacío').isLength({min:5}),
+    check('telefono').notEmpty().withMessage('El teléfono no puede estar vacío').isInt().withMessage('El teléfono deben ser solo números'),
+    (req:Request,res:Response,next: NextFunction)=>{
+        const errores = validationResult(req);
+        if(!errores.isEmpty()){
+            res.render('creaProfesores',{
+                pagina: 'Crear Profesor',
+                errores: errores.array()
+            });
+        };
+        next();
+    }
+]
 
 const profesorRepository = AppDataSource.getRepository(Profesor);
 export const consultarTodos =  async (req:Request,res:Response):Promise<void>=>{
@@ -63,6 +84,13 @@ export const buscarProfe = async (req:Request,res:Response):Promise<Profesor[] |
 }
 
  export const insertar = async (req:Request,res:Response):Promise<void>=>{
+    const errores = validationResult(req);
+        if(!errores.isEmpty()){
+            return res.render('creaProfesores',{
+                pagina: 'Crear Profesor',
+                errores: errores.array()
+            });
+        };
     const {nombre,apellido,email,profesion,telefono} =req.body;
         try{
             await AppDataSource.transaction(async(transactionalEntityManager)=>{
@@ -74,22 +102,33 @@ export const buscarProfe = async (req:Request,res:Response):Promise<Profesor[] |
                     const agrego = profesorRepository.create({nombre,apellido,email,profesion,telefono});
                     const insertar = await profesorRepository.save(agrego);
                 }
-            })
-            const profesores = await profesorRepository.find();
+            });
+            return res.redirect('/profesores/listarProfesores');
+            /*const profesores = await profesorRepository.find();
             res.render('listarProfesores',{
                 pagina: 'Lista de Profesores de la Universidad',
                 profesores
-            });
+            });*/
             
         }catch(err:unknown){
             if(err instanceof Error){
-                res.render(`Ha ocurrido un error ${err.message}`);
+                res.render('capturaErrores',{
+                    pagina: 'Error en la grabación de la información',
+                    falla: err.message
+                });
             }
         }
     }
 
 
     export const insertarxCurso = async (req:Request,res:Response):Promise<void>=>{
+        const errores = validationResult(req);
+        if(!errores.isEmpty()){
+            return res.render('creaProfesores',{
+                pagina: 'Crear Profesor',
+                errores: errores.array()
+            });
+        };
         const {nombre,apellido,email,profesion,telefono} =req.body;
             try{
                 await AppDataSource.transaction(async(transactionalEntityManager)=>{
@@ -102,15 +141,19 @@ export const buscarProfe = async (req:Request,res:Response):Promise<Profesor[] |
                         const insertar = await profesorRepository.save(agrego);
                     }
                 })
-                const profesores = await profesorRepository.find();
+                return res.redirect('/cursos/creaCursos');
+                /*const profesores = await profesorRepository.find();
                 res.render('creaCursos',{
                     pagina: 'Crear un Profesor',
                     profesores
-                });
+                });*/
                 
             }catch(err:unknown){
                 if(err instanceof Error){
-                    res.render(`Ha ocurrido un error ${err.message}`);
+                    res.render('capturaErrores',{
+                        pagina: 'Error en la grabación de la información',
+                        falla: err.message
+                    });
                 }
             }
         }
@@ -135,13 +178,21 @@ export const modificar = async (req:Request,res:Response):Promise<void>=>{
 
 export const eliminar = async (req:Request,res:Response):Promise<void>=>{
         try{
-            const profesor = await profesorRepository.findOneBy({id:parseInt(req.params.id)});
-            if(profesor){
-                const resultado = await profesorRepository.delete({id:parseInt(req.params.id)});
-                res.json(resultado);
-            } else {
-                res.json({mensaje:'No se ha encontrado el profesor para eliminar '});
-            }
+            await AppDataSource.transaction(async transactionalEntityManager=>{
+                const cursosRepository = transactionalEntityManager.getRepository(Curso);
+                const profesorRepository = transactionalEntityManager.getRepository(Profesor);
+                const tienecursos = await cursosRepository.count({where: {profesor: {id:parseInt(req.params.id)}}});
+                if(tienecursos == 0){
+                    const resultado = await profesorRepository.delete({id:parseInt(req.params.id)});
+                    if(resultado.affected == 1){
+                        return res.json({mensaje:'Profesor eliminado'});
+                    } else {
+                        throw new Error('Profesor no encontrado');
+                    }
+                } else {
+                    return res.json({mensaje: 'El profesor está dando un curso - No se puede eliminar - Asegúrese se que se debe eliminar el curso'})
+                }
+            });
         }catch(err:unknown){
            if(err instanceof Error){
             res.status(500).send(err.message);

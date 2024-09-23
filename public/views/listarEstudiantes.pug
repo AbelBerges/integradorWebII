@@ -26,11 +26,11 @@ block contenido
                         td.px-6.py-4= estudiante.apellido 
                         td.px-6.py-4= estudiante.email 
                         td.px-6.py-4: a.text-blue-500(href=`/estudiantes/modificarEstudiante/${estudiante.id}`) Editar estudiante
-                                      a.text-blue-500.ml-2(href="#" onclic=`eliminarEstudiante${'estudiante.id'}`) Eliminar estudiante 
+                                      a.text-red-500.ml-2(href="/estudiantes/listarEstudiantes#", onclick=`eliminarEstudiante('${estudiante.id}')`) Eliminar Estudiante
 
 block scripts
     script.
-        funtion eliminarEstudiante(id) {
+        function eliminarEstudiante(id) {
             if (confirm('¿Estás seguro de eliminar el Estudiante?')){
                 fetch(`/estudiantes/${id}`,{
                     method: 'DELETE'

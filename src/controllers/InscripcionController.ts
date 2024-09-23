@@ -1,8 +1,29 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { CursoEstudiante } from "../models/CursoEstudianteModel";
 import { buscarEstudiantes } from "./EstudianteController";
-import { buscarCursos } from "./CursoController";
+import { buscarCursos, consultarUno } from "./CursoController";
 import { AppDataSource } from "../db/conection";
+import { check, validationResult } from "express-validator";
+
+
+export const validarIns = ()=>[
+    check('nota').isFloat().withMessage('La nota debe tener un valor númerico '),
+    async (req:Request,res:Response,next: NextFunction)=>{
+        const errores = validationResult(req);
+        const estudiantes = await buscarEstudiantes(req,res);
+        const cursos = await buscarCursos(req,res);
+        if(!errores.isEmpty()){
+            res.render('creaInscripciones',{
+                pagina: 'Crear inscripción',
+                errores: errores.array(),
+                cursos,
+                estudiantes
+            });
+        };
+        next();
+    }
+];
+
 const inscripcionRepository = AppDataSource.getRepository(CursoEstudiante);
 export const buscarTodos = async (req:Request,res:Response):Promise<void>=>{
         try{
@@ -17,28 +38,72 @@ export const buscarTodos = async (req:Request,res:Response):Promise<void>=>{
             });
         }catch(err:unknown){
             if(err instanceof Error){
-                res.status(500).send(err.message);
+                res.render('capturaErrores',{
+                    pagina: 'Error en la grabación de la infromación',
+                    falla: err.message
+                });
             }
         }
     }
 
-export const buscaxCurso = async (req:Request,res:Response):Promise<void>=>{
+export const buscarInscripcionxCurso = async (req:Request,res:Response):Promise<void>=>{
+    try{
+
+    } catch(err:unknown){
+        if(err instanceof Error){
+            res.render('capturaErrores',{
+                pagina: 'Error al acceder a la información',
+                falla: err.message
+            })
+        }
+    }
+}
+
+
+export const buscaxCursoResult = async (req:Request,res:Response):Promise<void>=>{
         try{
             const cursos = await inscripcionRepository.findBy({curso_id:parseInt(req.params.id)});
+            const estudiantes = await buscarEstudiantes(req,res);
             if(cursos){
-                res.render('listarInscripciones',{
+                res.render('listarInscripciones',{     ///Modificar la pagina
                     pagina: 'Listado del curso',
-                    cursos
+                    cursos,
+                    estudiantes
                 })
             } else {
                 res.status(400).json({mensaje:'No se ha encontrado registros'});
             }
         }catch(err:unknown){
             if(err instanceof Error){
-                res.status(500).send(err.message);
+                res.render('capturaErrores',{
+                    pagina: 'Error en la grabación de la información',
+                    falla: err.message
+                });
             }
         }
     }
+
+    export const buscaxCurso = async (req:Request,res:Response):Promise<void>=>{
+        try{
+            const cursos = await buscarCursos(req,res);
+            if(cursos){
+                console.log(cursos);
+                res.render('buscarInscripcionesxCurso',{
+                    pagina: 'Listado de los cursos',
+                    cursos
+                })
+            }
+        }catch(err:unknown){
+            if(err instanceof Error){
+                res.render('capturaErrores',{
+                    pagina: 'Error en la grabación de la información',
+                    falla: err.message
+                });
+            }
+        }
+    }
+
+
 
 export const buscarxEstudiante = async (req:Request,res:Response):Promise<void>=>{
         try{
@@ -54,37 +119,58 @@ export const buscarxEstudiante = async (req:Request,res:Response):Promise<void>=
             
         }catch(err:unknown){
             if(err instanceof Error){
-                res.status(500).send(err.message);
+                res.render('capturaErrores',{
+                    pagina: 'Error en la grabación de la infromación',
+                    falla: err.message
+                });
             }
         }
   }
 
 
 export const agregar = async (req:Request,res:Response):Promise<void>=>{
+    const errores = validationResult(req);
+    const estudiantes = await buscarEstudiantes(req,res);
+    const cursos = await buscarCursos(req,res);
+        if(!errores.isEmpty()){
+            res.render('creaInscripciones',{
+                pagina: 'Crear inscripción',
+                errores: errores.array(),
+                cursos,
+                estudiantes
+            });
+        };
     const {curso_id,estudiante_id,nota} = req.body;
         try{
             await AppDataSource.transaction(async(transactionaEntityManager)=>{
                 const inscripcionRepository = transactionaEntityManager.getRepository(CursoEstudiante);
                 const existe = await inscripcionRepository.findOneBy({curso_id:parseInt(curso_id),estudiante_id:parseInt(estudiante_id)});
                 if(existe){
-                    res.render('La inscripción a ese curso ya existe para ese estudiante');
+                    res.render('capturaErrores',{
+                        pagina: 'Error en la grabación de estudiante',
+                        falla: 'Esa inscripción ya existe '
+                    });
                 } else {
                     const agregar = inscripcionRepository.create({curso_id,estudiante_id,nota});
                     const resultado = await inscripcionRepository.save(agregar);      
                 }
             });
-            const estudiantes = await buscarEstudiantes(req,res);
-            const cursos = await buscarCursos(req,res);
-            const inscripciones = await inscripcionRepository.find();
+            res.redirect('/inscripciones/listarInscripciones');
+            //const estudiantes = await buscarEstudiantes(req,res);
+            //const cursos = await buscarCursos(req,res);
+            /*const inscripciones = await inscripcionRepository.find();
             res.render('listarInscripciones',{
                 pagina: 'Listar Inscripciones',
                 inscripciones,
                 estudiantes,
                 cursos
-            })
+            })*/
         }catch(err:unknown){
             if(err instanceof Error){
-                res.status(500).send(err.message);
+                res.render('capturaErrores',{
+                    pagina: 'Error en la grabación de la información',
+                    falla: err.message
+                });
             }
         }
     }
@@ -101,12 +187,22 @@ export const buscarUno = async (req:Request,res:Response):Promise<CursoEstudiant
         }
     }catch(err:unknown){
         if(err instanceof Error){
-            res.render(err.message);
+            res.render('capturaErrores',{
+                pagina: 'Error en la grabación de la infromación',
+                falla: err.message
+            });
         }
     }
 }
 
 export const modifica = async (req:Request,res:Response):Promise<void>=>{
+    const errores = validationResult(req);
+        if(!errores.isEmpty()){
+            res.render('creaInscripciones',{
+                pagina: 'Crear inscripción',
+                errores: errores.array()
+            });
+        };
     const {curso_id,estudiante_id} = req.params;
     const {nota} = req.body; 
     try{
@@ -120,17 +216,31 @@ export const modifica = async (req:Request,res:Response):Promise<void>=>{
         }
     } catch(err:unknown){
         if(err instanceof Error){
-            res.render(err.message);
+            res.render('capturaErrores',{
+                pagina: 'Error en la grabación de la infromación',
+                falla: err.message
+            });
         }
     }
 }
 
 export const eliminar = async (req:Request,res:Response):Promise<void>=>{
     try{
-        res.json('Elimino la inscripción')
+        await AppDataSource.transaction(async transactionalEntityManager=>{
+            const inscripcionRepository = transactionalEntityManager.getRepository(CursoEstudiante);
+            const resultado = await inscripcionRepository.delete({curso_id:parseInt(req.params.curso_id),estudiante_id:parseInt(req.params.estudiante_id)});
+            if(resultado.affected == 1){
+                return res.json({mensaje: 'Inscripción eliminada'});
+            } else {
+                return res.json({mensaje: 'No se ha podido eliminar la inscripción '});
+            }
+        });
     }catch(err:unknown){
         if(err instanceof Error){
-            res.status(500).send(err.message);
+            res.render('capturaErrores',{
+                pagina: 'Error en la grabación de la infromación',
+                falla: err.message
+            });
         }
     }
 }

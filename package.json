@@ -25,6 +25,7 @@
     "@types/dotenv": "^6.1.1",
     "cors": "^2.8.5",
     "express": "^4.19.2",
+    "express-validator": "^7.2.0",
     "glob": "^11.0.0",
     "inflight": "^1.0.6",
     "method-override": "^3.0.0",

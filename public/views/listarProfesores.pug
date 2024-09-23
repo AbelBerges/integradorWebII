@@ -28,19 +28,19 @@ block contenido
                         td.px-6.py-4= profesor.profesion
                         td.px-6.py-4= profesor.telefono   
                         td.px-6.py-4: a.text-blue-500(href=`/profesores/modificarProfesor/${profesor.id} `) Editar profesor
-                                      a.text-blue-500.ml-2(href="#" onclic=`eliminarEstudiante${'profesor.id'} `) Eliminar profesor 
+                                      a.text-red-500.ml-2(href="/profesores/listarProfesores#" onclick=`eliminarProfesor('${profesor.id}')`) Eliminar profesor
 
 block scripts
     script.
-        funtion eliminarProfesor(id) {
+        function eliminarProfesor(id) {
             if (confirm('¿Estás seguro de eliminar el Profesor?')){
-                fetch(`/estudiantes/${id}`,{
+                fetch(`/profesores/${id}`,{
                     method: 'DELETE'
                 })
                 .then(response => response.json())
                 .then(data => {
-                    if (data.mensaje === 'Estudiante eliminado') {
-                        alert ('Estudiante eliminado con exito ');
+                    if (data.mensaje === 'Profesor eliminado') {
+                        alert ('Profesor eliminado con exito ');
                         window.location.reload();
                     } else {
                         alert(data.mensaje);
@@ -48,7 +48,7 @@ block scripts
                 })
                 .catch(error =>{
                     console.error('Error:', error);
-                    alert('Error al eliminar el estudiante');
+                    alert('Error al eliminar el profesor');
                 })
             }
         }

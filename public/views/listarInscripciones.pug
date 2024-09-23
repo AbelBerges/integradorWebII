@@ -5,6 +5,8 @@ block contenido
         ul.flex.space-x-4
             li 
                 a(href="/inscripciones/creaInscripciones" class="text-green-600 hover:text-green-800") Agregar Inscripción
+            li 
+                a(href="/inscripciones/buscarInscripcionesxCurso" class="text-green-500 hover:text-green-800") Buscar Inscripcion por Curso
     .py-10 
         h1.text-4xl.my-10.font-extrabold.text-center Proyecto
             span.font-normal Universidad
@@ -28,19 +30,20 @@ block contenido
                                 td.px-6.py-4= `${estudiante.nombre} ${estudiante.apellido}`
                         td.px-6.py-4= inscripcion.nota
                         td.px-6.py-4: a.text-blue-500(href=`/inscripciones/modificarInscripcion/${inscripcion.curso_id}/${inscripcion.estudiante_id}`) Editar inscripción
-                                      a.text-blue-500.ml-2(href="#" onclic=`eliminarInscripcion${'inscripcion.curso_id'}/${'inscripcion.estudiante_id'}`) Eliminar inscripción
+                                      a.text-red-500.ml-2(href="/inscripciones/creaInscripciones#" onclick =`eliminarInscripcion('${inscripcion.curso_id}/${inscripcion.estudiante_id}')`) Eliminar inscripción
 
 block scripts
     script.
-        funtion eliminarInscripcion(curso_id,estudiante_id) {
+        function eliminarInscripcion(curso_id,estudiante_id) {
+            
             if (confirm('¿Estás seguro de eliminar la Inscripcion?')){
-                fetch(`/inscripciones/${curso_id}/${estudiante_id}`,{
+                fetch(`/inscripciones/${curso_id}`,{
                     method: 'DELETE'
                 })
                 .then(response => response.json())
                 .then(data => {
-                    if (data.mensaje === 'Estudiante eliminado') {
-                        alert ('Estudiante eliminado con exito ');
+                    if (data.mensaje === 'Inscripción eliminada') {
+                        alert ('Inscripción eliminada con exito ');
                         window.location.reload();
                     } else {
                         alert(data.mensaje);
@@ -48,7 +51,7 @@ block scripts
                 })
                 .catch(error =>{
                     console.error('Error:', error);
-                    alert('Error al eliminar el estudiante');
+                    alert('Error al eliminar la inscripción');
                 })
             }
         }

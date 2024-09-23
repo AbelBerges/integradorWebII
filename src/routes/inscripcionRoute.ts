@@ -3,10 +3,13 @@ import { Request, Response } from "express";
 import { agregar, buscarTodos, buscaxCurso, eliminar, buscarxEstudiante, modifica, buscarUno } from "../controllers/InscripcionController";
 import { buscarUnEstudiante, buscarEstudiantes } from "../controllers/EstudianteController";
 import { buscarCursos } from "../controllers/CursoController";
+import { validarIns } from "../controllers/InscripcionController";
 const rutas = express.Router();
 
 
 rutas.get("/listarInscripciones",buscarTodos);
+
+rutas.get("/buscarInscripcionesxCurso", buscaxCurso);
 
 rutas.get("/creaInscripciones", async(req:Request,res:Response)=>{
     try{
@@ -24,7 +27,7 @@ rutas.get("/creaInscripciones", async(req:Request,res:Response)=>{
     }
     
 });
-rutas.post("/",agregar);
+rutas.post("/creaInscripciones", validarIns(), agregar);
 
 rutas.get("/modificarInscripcion/:curso_id/:estudiante_id",async (req:Request,res:Response)=>{
     try{
@@ -50,11 +53,10 @@ rutas.get("/modificarInscripcion/:curso_id/:estudiante_id",async (req:Request,re
         }
     }
 });
-rutas.route("/:curso_id/:estudiante_id").put(modifica);
+rutas.route("/:curso_id/:estudiante_id").put(validarIns(), modifica);
 
-rutas.get("/xCurso/:id",buscaxCurso);
-rutas.get("/xEstudiante/:id",buscarxEstudiante);
+//rutas.get("/xCurso/:id",buscaxCurso);
+//rutas.get("/xEstudiante/:id",buscarxEstudiante);
 
-rutas.route("/:id")
-     .delete(eliminar);
+rutas.route("/:curso_id/:estudiante_id").delete(eliminar);
 export default rutas;
