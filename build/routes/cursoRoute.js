@@ -17,6 +17,8 @@ const CursoController_1 = require("../controllers/CursoController");
 const ProfesorController_1 = require("../controllers/ProfesorController");
 const rutas = express_1.default.Router();
 rutas.get("/listarCursos", CursoController_1.consultarTodos);
+rutas.get("/listarProfesoresxCurso", CursoController_1.profesorxCurso);
+rutas.post("/listarProfesoresxCursoResult", CursoController_1.buscarxProfesor);
 rutas.get("/creaCursos", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const profesores = yield (0, ProfesorController_1.buscarProfe)(req, res);
@@ -31,8 +33,16 @@ rutas.get("/creaCursos", (req, res) => __awaiter(void 0, void 0, void 0, functio
         }
     }
 }));
-rutas.post("/", CursoController_1.insertar);
+rutas.post("/creaCursos", (0, CursoController_1.validarCurso)(), CursoController_1.insertar);
 //rutas.get("/xProfesor/:id",cursoControlador.buscarxProfesor);
+rutas.get("/creaCursosIns", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const profesores = yield (0, ProfesorController_1.buscarProfe)(req, res);
+    res.render('creaCursosIns', {
+        pagina: 'Crear Curso',
+        profesores
+    });
+}));
+rutas.post("/xIns", CursoController_1.insertarxIns);
 rutas.get("/modificarCurso/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const curso = yield (0, CursoController_1.consultarUno)(req, res);

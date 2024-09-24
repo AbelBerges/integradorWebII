@@ -4,7 +4,7 @@ block contenido
     .flex.justify-end.mb-4
         ul.flex.space-x-4
             li 
-                a(href="/cursos/creaCursos" class="text-green-600 hover:text-green-800") Agregar Curso
+                a(href="/inscripciones/creaInscripciones" class="text-green-600 hover:text-green-800") Agregar Inscripción
     .py-10 
         h1.text-4xl.my-10.font-extrabold.text-center Proyecto
             span.font-normal Universidad
@@ -27,8 +27,8 @@ block contenido
                                     if (estudiante.id == cursoEstudiante.estudiante_id)
                                         td.px-6.py-4= `${estudiante.nombre} ${estudiante.apellido} `
                                 td.px-6.py-4= cursoEstudiante.nota 
-                                td.px-6.py-4: a.text-blue-500(href=`/inscripciones/modificarCurso/${cursoEstudiante.curso_id} `) Editar inscripción
-                                              a.text-red-500.ml-2(href="/inscripciones/listarProfesoresxCursoResult#", onclick =`eliminarCurso('${cursoEstudiante.curso_id}')`) Eliminar inscripción
+                                td.px-6.py-4: a.text-blue-500(href=`/inscripciones/modificarInscripcion/${cursoEstudiante.curso_id}/${cursoEstudiante.estudiante_id}`) Editar inscripción
+                                              a.text-red-500.ml-2(href="/inscripciones/listarProfesoresxCursoResult#", onclick =`eliminarCurso('${cursoEstudiante.curso_id}/${cursoEstudiante.estudiante_id}')`) Eliminar inscripción
                                                                             
 block scripts
     script.

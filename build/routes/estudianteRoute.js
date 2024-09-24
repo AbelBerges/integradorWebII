@@ -14,17 +14,24 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const EstudianteController_1 = require("../controllers/EstudianteController");
+const EstudianteController_2 = require("../controllers/EstudianteController");
 const ruta = express_1.default.Router();
-ruta.get("/listarEstudiantes", EstudianteController_1.consultarTodos);
+ruta.get("/listarEstudiantes", EstudianteController_2.consultarTodos);
 ruta.get('/creaEstudiantes', (req, res) => {
     res.render('creaEstudiantes', {
         pagina: 'Crear Estudiante'
     });
 });
-ruta.post("/", EstudianteController_1.insertar);
+ruta.post("/", (0, EstudianteController_1.validar)(), EstudianteController_2.insertar);
+ruta.get('/creaEstudiantesIns', (req, res) => {
+    res.render('creaEstudiantesIns', {
+        pagina: 'Crear Estudiante'
+    });
+});
+ruta.post("/xIns", EstudianteController_2.insertarxIns);
 ruta.get("/modificarEstudiante/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const estudiante = yield (0, EstudianteController_1.consultarUno)(req, res);
+        const estudiante = yield (0, EstudianteController_2.consultarUno)(req, res);
         if (estudiante) {
             res.render('modificaEstudiante', {
                 pagina: 'Modificación de los datos del Estudiante',
@@ -42,7 +49,7 @@ ruta.get("/modificarEstudiante/:id", (req, res) => __awaiter(void 0, void 0, voi
     }
 }));
 ruta.route("/:id")
-    .get(EstudianteController_1.consultarUno)
-    .put(EstudianteController_1.modificar)
-    .delete(EstudianteController_1.eliminar);
+    .get(EstudianteController_2.consultarUno)
+    .put((0, EstudianteController_1.validar)(), EstudianteController_2.modificar)
+    .delete(EstudianteController_2.eliminar);
 exports.default = ruta;

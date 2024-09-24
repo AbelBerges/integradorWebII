@@ -9,10 +9,36 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.eliminar = exports.modificar = exports.insertar = exports.buscarEstudiantes = exports.buscarUnEstudiante = exports.consultarUno = exports.consultarTodos = void 0;
+exports.eliminar = exports.modificar = exports.insertarxIns = exports.insertar = exports.buscarEstudiantes = exports.buscarUnEstudiante = exports.consultarUno = exports.consultarTodos = exports.validar = void 0;
 const conection_1 = require("../db/conection");
 const EstudianteModel_1 = require("../models/EstudianteModel");
+const CursoController_1 = require("./CursoController");
+const CursoEstudianteModel_1 = require("../models/CursoEstudianteModel");
+const express_validator_1 = require("express-validator");
 const estudianteRepository = conection_1.AppDataSource.getRepository(EstudianteModel_1.Estudiante);
+const validar = () => [
+    (0, express_validator_1.check)('dni')
+        .notEmpty().withMessage('El DNI no puede estar vacío')
+        .isLength({ min: 7 }).withMessage('El DNI tiene que tener 7 caracteres minímo')
+        .isInt().withMessage('El DNI solo debe tener números enteros'),
+    (0, express_validator_1.check)('nombre').notEmpty().withMessage('El nombre no puede estar vacío')
+        .isLength({ min: 3 }).withMessage('El apellido tiene que tener 3 caracteres mínimo'),
+    (0, express_validator_1.check)('apellido').notEmpty().withMessage('El apellido no puede estar vacío')
+        .isLength({ min: 3 }).withMessage('El apellido tiene que tener 3 caracteres mínimo'),
+    (0, express_validator_1.check)('email').notEmpty().withMessage('El email no puede estar vacío')
+        .isEmail().withMessage('Debe proporcionar un email válido'),
+    (req, res, next) => {
+        const errores = (0, express_validator_1.validationResult)(req);
+        if (!errores.isEmpty()) {
+            res.render('creaEstudiantes', {
+                pagina: 'Crear Estudiante',
+                errores: errores.array()
+            });
+        }
+        next();
+    }
+];
+exports.validar = validar;
 const consultarTodos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const estudiantes = yield estudianteRepository.find();
@@ -25,7 +51,10 @@ const consultarTodos = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
     catch (err) {
         if (err instanceof Error) {
-            res.status(500).send(err.message);
+            res.render('capturaErrores', {
+                pagina: 'Error en la grabación de la infromación',
+                falla: err.message
+            });
         }
     }
 });
@@ -46,7 +75,10 @@ const consultarUno = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
     catch (err) {
         if (err instanceof Error) {
-            res.status(500).send(err.message);
+            res.render('capturaErrores', {
+                pagina: 'Error en la grabación de la infromación',
+                falla: err.message
+            });
         }
     }
     //return unEstudiante;
@@ -64,7 +96,10 @@ const buscarUnEstudiante = (idEst, res) => __awaiter(void 0, void 0, void 0, fun
     }
     catch (err) {
         if (err instanceof Error) {
-            res.render(err.message);
+            res.render('capturaErrores', {
+                pagina: 'Error en la grabación de la infromación',
+                falla: err.message
+            });
         }
     }
 });
@@ -81,12 +116,22 @@ const buscarEstudiantes = (req, res) => __awaiter(void 0, void 0, void 0, functi
     }
     catch (err) {
         if (err instanceof Error) {
-            res.render(err.message);
+            res.render('capturaErrores', {
+                pagina: 'Error en la grabación de la infromación',
+                falla: err.message
+            });
         }
     }
 });
 exports.buscarEstudiantes = buscarEstudiantes;
 const insertar = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const errores = (0, express_validator_1.validationResult)(req);
+    if (!errores.isEmpty()) {
+        return res.render('creaEstudiantes', {
+            pagina: 'Crear Estudiante',
+            errores: errores.array()
+        });
+    }
     const { dni, nombre, apellido, email } = req.body;
     try {
         yield conection_1.AppDataSource.transaction((transactionalEntityManager) => __awaiter(void 0, void 0, void 0, function* () {
@@ -101,19 +146,64 @@ const insertar = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 const resultado = yield estudianteRepository.save(insertar);
             }
         }));
-        const estudiantes = yield estudianteRepository.find();
-        res.render('listarEstudiantes', {
+        return res.redirect('/estudiantes/listarEstudiantes');
+        /*const estudiantes = await estudianteRepository.find();
+        res.render('listarEstudiantes',{
             pagina: 'Lista de Estudiantes',
             estudiantes
-        });
+        });*/
     }
     catch (err) {
         if (err instanceof Error) {
-            res.status(500).send(err.message);
+            res.render('capturaErrores', {
+                pagina: 'Error en la grabación de estudiante',
+                falla: err.message
+            });
         }
     }
 });
 exports.insertar = insertar;
+//probar si funciona como void
+const insertarxIns = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const errores = (0, express_validator_1.validationResult)(req);
+    if (!errores.isEmpty()) {
+        res.render('creaEstudiantesIns', {
+            pagina: 'Crear Estudiante',
+            errores: errores.array()
+        });
+    }
+    const { dni, nombre, apellido, email } = req.body;
+    try {
+        yield conection_1.AppDataSource.transaction((transactionalEntityManager) => __awaiter(void 0, void 0, void 0, function* () {
+            const estudianteRepository = transactionalEntityManager.getRepository(EstudianteModel_1.Estudiante);
+            const existe = yield estudianteRepository.findOne({ where: [{ dni }, { email }] });
+            if (existe) {
+                throw new Error('El estudiante ya existe');
+            }
+            else {
+                const insertar = estudianteRepository.create({ dni, nombre, apellido, email });
+                const resultado = yield estudianteRepository.save(insertar);
+            }
+        }));
+        const estudiantes = yield estudianteRepository.find();
+        const cursos = yield (0, CursoController_1.buscarCursos)(req, res);
+        res.render('creaInscripciones', {
+            pagina: 'Creación de Inscripciones',
+            estudiantes,
+            cursos
+        });
+        return estudiantes;
+    }
+    catch (err) {
+        if (err instanceof Error) {
+            res.render('capturaErrores', {
+                pagina: 'Error en la grabación de estudiante',
+                falla: err.message
+            });
+        }
+    }
+});
+exports.insertarxIns = insertarxIns;
 const modificar = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { dni, nombre, apellido, email } = req.body;
     try {
@@ -137,14 +227,24 @@ const modificar = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.modificar = modificar;
 const eliminar = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const estudiante = yield estudianteRepository.findOneBy({ id: parseInt(req.params.id) });
-        if (estudiante) {
-            const resultado = yield estudianteRepository.delete({ id: parseInt(req.params.id) });
-            res.json(resultado);
-        }
-        else {
-            res.status(400).json({ mensaje: 'No se ha encontrado el estudiante' });
-        }
+        yield conection_1.AppDataSource.transaction((transactionalEntityManager) => __awaiter(void 0, void 0, void 0, function* () {
+            const inscriptoRepository = transactionalEntityManager.getRepository(CursoEstudianteModel_1.CursoEstudiante);
+            const estudianteRepository = transactionalEntityManager.getRepository(EstudianteModel_1.Estudiante);
+            const tieneCursos = yield inscriptoRepository.count({ where: { estudiante: { id: parseInt(req.params.id) } } });
+            if (tieneCursos == 0) {
+                const resultado = yield estudianteRepository.delete({ id: parseInt(req.params.id) });
+                if (resultado.affected == 1) {
+                    return res.json({ mensaje: 'Estudiante eliminado' });
+                }
+                else {
+                    throw new Error('Estudiante no encontrado');
+                }
+            }
+            else {
+                //throw new Error('El estudiante está cursando materias - No se puede eliminar - Asegúrese de eliminar la inscripción antes')
+                return res.json({ mensaje: 'El estudiante está cursando materias - No se puede eliminar - Asegúrese de eliminar la inscripción antes' });
+            }
+        }));
     }
     catch (err) {
         if (err instanceof Error) {

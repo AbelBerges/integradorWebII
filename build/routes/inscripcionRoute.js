@@ -16,8 +16,13 @@ const express_1 = __importDefault(require("express"));
 const InscripcionController_1 = require("../controllers/InscripcionController");
 const EstudianteController_1 = require("../controllers/EstudianteController");
 const CursoController_1 = require("../controllers/CursoController");
+const InscripcionController_2 = require("../controllers/InscripcionController");
 const rutas = express_1.default.Router();
 rutas.get("/listarInscripciones", InscripcionController_1.buscarTodos);
+rutas.get("/buscarInscripcionesxCurso", InscripcionController_1.buscaxCurso);
+rutas.post("/buscarInscripcionesxCursoResult", InscripcionController_1.buscaxCursoResult);
+rutas.get("/buscarInscripcionesxEstudiante", InscripcionController_1.buscarxEstudiante);
+rutas.post("/buscarInscripcionesxEstudianteREsult", InscripcionController_1.buscarxEstudianteResult);
 rutas.get("/creaInscripciones", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const estudiantes = yield (0, EstudianteController_1.buscarEstudiantes)(req, res);
@@ -34,7 +39,7 @@ rutas.get("/creaInscripciones", (req, res) => __awaiter(void 0, void 0, void 0, 
         }
     }
 }));
-rutas.post("/", InscripcionController_1.agregar);
+rutas.post("/creaInscripciones", (0, InscripcionController_2.validarIns)(), InscripcionController_1.agregar);
 rutas.get("/modificarInscripcion/:curso_id/:estudiante_id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const inscripcion = yield (0, InscripcionController_1.buscarUno)(req, res);
@@ -61,9 +66,8 @@ rutas.get("/modificarInscripcion/:curso_id/:estudiante_id", (req, res) => __awai
         }
     }
 }));
-rutas.route("/:curso_id/:estudiante_id").put(InscripcionController_1.modifica);
-rutas.get("/xCurso/:id", InscripcionController_1.buscaxCurso);
-rutas.get("/xEstudiante/:id", InscripcionController_1.buscarxEstudiante);
-rutas.route("/:id")
-    .delete(InscripcionController_1.eliminar);
+rutas.route("/:curso_id/:estudiante_id").put((0, InscripcionController_2.validarIns)(), InscripcionController_1.modifica);
+//rutas.get("/xCurso/:id",buscaxCurso);
+//rutas.get("/xEstudiante/:id",buscarxEstudiante);
+rutas.route("/:curso_id/:estudiante_id").delete(InscripcionController_1.eliminar);
 exports.default = rutas;
