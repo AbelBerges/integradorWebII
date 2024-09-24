@@ -47,8 +47,17 @@ export const buscarTodos = async (req:Request,res:Response):Promise<void>=>{
         }
     }
 
-export const buscarInscripcionxCurso = async (req:Request,res:Response):Promise<void>=>{
+export const buscarxEstudiante = async (req:Request,res:Response):Promise<void>=>{
     try{
+        const estudiantes = await buscarEstudiantes(req,res);
+        //const cursos = await buscarCursos(req,res);
+        //const cursoEstudiantes = await inscripcionRepository.findBy({estudiante_id:parseInt(req.body.id)});
+        if(estudiantes){
+            res.render('buscarInscripcionesxEstudiante',{
+                pagina: 'Seleccione el estudiante',
+                estudiantes
+            });
+        }
 
     } catch(err:unknown){
         if(err instanceof Error){
@@ -60,6 +69,28 @@ export const buscarInscripcionxCurso = async (req:Request,res:Response):Promise<
     }
 }
 
+export const buscarxEstudianteResult = async (req:Request,res:Response):Promise<void>=>{
+    try{
+        const estudiantes = await buscarEstudiantes(req,res);
+        const cursos = await buscarCursos(req,res);
+        const cursoEstudiantes = await inscripcionRepository.findBy({estudiante_id:parseInt(req.body.id)});
+        if(cursoEstudiantes){
+            res.render('buscarInscripcionesxEstudianteResult',{
+                pagina: 'Listado de las inscripciones del estudiante',
+                cursoEstudiantes,
+                cursos,
+                estudiantes
+            })
+        }
+    }catch(err){
+        if(err instanceof Error){
+            res.render('capturarErrores',{
+                pagina: 'Error al acceder a la infromación',
+                falla: err.message
+            });
+        };
+    }
+}
 
 export const buscaxCursoResult = async (req:Request,res:Response):Promise<void>=>{
         try{
@@ -68,7 +99,7 @@ export const buscaxCursoResult = async (req:Request,res:Response):Promise<void>=
             const estudiantes = await buscarEstudiantes(req,res);
             const cursos = await buscarCursos(req,res);
             if(cursoEstudiantes){
-                res.render('buscarInscripcionesxCursoResult',{     ///Modificar la pagina
+                res.render('buscarInscripcionesxCursoResult',{
                     pagina: 'Listado de las inscripciones del curso seleccionado',
                     cursoEstudiantes,
                     estudiantes,
@@ -108,7 +139,7 @@ export const buscaxCursoResult = async (req:Request,res:Response):Promise<void>=
 
 
 
-export const buscarxEstudiante = async (req:Request,res:Response):Promise<void>=>{
+/*export const buscarxEstudiante = async (req:Request,res:Response):Promise<void>=>{
         try{
            const cursos = await inscripcionRepository.findBy({estudiante_id:parseInt(req.params.id)});
            if(cursos){
@@ -128,7 +159,7 @@ export const buscarxEstudiante = async (req:Request,res:Response):Promise<void>=
                 });
             }
         }
-  }
+  }*/
 
 
 export const agregar = async (req:Request,res:Response):Promise<void>=>{

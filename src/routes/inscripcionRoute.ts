@@ -1,6 +1,7 @@
 import express from "express";
 import { Request, Response } from "express";
-import { agregar, buscarTodos, buscaxCurso, eliminar, buscaxCursoResult, modifica, buscarUno } from "../controllers/InscripcionController";
+import { agregar, buscarTodos, buscaxCurso, eliminar, buscaxCursoResult, 
+        modifica, buscarUno, buscarxEstudiante, buscarxEstudianteResult } from "../controllers/InscripcionController";
 import { buscarUnEstudiante, buscarEstudiantes } from "../controllers/EstudianteController";
 import { buscarCursos } from "../controllers/CursoController";
 import { validarIns } from "../controllers/InscripcionController";
@@ -11,6 +12,9 @@ rutas.get("/listarInscripciones",buscarTodos);
 
 rutas.get("/buscarInscripcionesxCurso", buscaxCurso);
 rutas.post("/buscarInscripcionesxCursoResult", buscaxCursoResult);
+
+rutas.get("/buscarInscripcionesxEstudiante",buscarxEstudiante);
+rutas.post("/buscarInscripcionesxEstudianteREsult", buscarxEstudianteResult);
 
 rutas.get("/creaInscripciones", async(req:Request,res:Response)=>{
     try{
