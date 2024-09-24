@@ -17,10 +17,10 @@ block contenido
 
         .mt-8.mx-auto.max-w-md
             .bg-white.py-8.px-4.shadow
-                form.space-y-5(method='POST' action='/cursos/buscarInscripcionesxCursoResult/' noValidate)
+                form.space-y-5(method='POST' action='/inscripciones/buscarInscripcionesxCursoResult/' noValidate)
                     
                     div 
-                        label.block.text-sm.uppercase.text-gray-500.md-3.font-bold(for="profesor_id") Profesor
+                        label.block.text-sm.uppercase.text-gray-500.md-3.font-bold(for="curso_id") Seleccione un curso
                         select(name="id")
                             each curso in cursos 
                                 option(value=curso.id) #{curso.nombre} 

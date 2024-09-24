@@ -13,32 +13,34 @@ block contenido
         table.table-auto.w-full.mt-4
             thead 
                 tr  
-                    th.text-left.text-gray-500.uppercase.px-6.py-3 Profesor
-                    th.text-left.text-gray-500.uppercase.px-6.py-3 Nombre Curso 
-                    th.text-left.text-gray-500.uppercase.px-6.py-3 Descripción Curso
+                    th.text-left.text-gray-500.uppercase.px-6.py-3 Curso
+                    th.text-left.text-gray-500.uppercase.px-6.py-3 Estudiante 
+                    th.text-left.text-gray-500.uppercase.px-6.py-3 Nota
                     th.text-left.text-gray-500.uppercase.px-6.py-3 Acciones
             tbody 
-                each profesor in profesores 
-                    each  curso in cursos 
-                        tr 
-                            if (curso.profesor_id == profesor.id)
-                                td.px-6.py-4= `${profesor.nombre} ${profesor.apellido}  `
+                each curso in cursos
+                    each cursoEstudiante in cursoEstudiantes
+                        if (curso.id == cursoEstudiante.curso_id)
+                            tr 
                                 td.px-6.py-4= curso.nombre
-                                td.px-6.py-4= curso.descripcion
-                                td.px-6.py-4: a.text-blue-500(href=`/cursos/modificarCurso/${curso.id} `) Editar curso
-                                              a.text-red-500.ml-2(href="/cursos/listarProfesoresxCursoResult#", onclick =`eliminarCurso('${curso.id}')`) Eliminar curso 
+                                each estudiante in estudiantes
+                                    if (estudiante.id == cursoEstudiante.estudiante_id)
+                                        td.px-6.py-4= `${estudiante.nombre} ${estudiante.apellido} `
+                                td.px-6.py-4= cursoEstudiante.nota 
+                                td.px-6.py-4: a.text-blue-500(href=`/inscripciones/modificarCurso/${cursoEstudiante.curso_id} `) Editar inscripción
+                                              a.text-red-500.ml-2(href="/inscripciones/listarProfesoresxCursoResult#", onclick =`eliminarCurso('${cursoEstudiante.curso_id}')`) Eliminar inscripción
                                                                             
 block scripts
     script.
         function eliminarCurso(id) {
-            if (confirm('¿Estás seguro de eliminar el Curso?')){
-                fetch(`/cursos/${id}`,{
+            if (confirm('¿Estás seguro de eliminar la inscripción?')){
+                fetch(`/inscripciones/${curso_id}`,{
                     method: 'DELETE'
                 })
                 .then(response => response.json())
                 .then(data => {
-                    if (data.mensaje === 'Curso eliminado') {
-                        alert ('Curso eliminado con exito ');
+                    if (data.mensaje === 'Inscripción eliminada') {
+                        alert ('Inscripción eliminada con exito ');
                         window.location.reload();
                     } else {
                         alert(data.mensaje);
@@ -46,7 +48,7 @@ block scripts
                 })
                 .catch(error =>{
                     console.error('Error:', error);
-                    alert('Error al eliminar el estudiante');
+                    alert('Error al eliminar la inscripción');
                 })
             }
         }

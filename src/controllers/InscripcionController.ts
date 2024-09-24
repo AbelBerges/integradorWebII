@@ -1,9 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import { CursoEstudiante } from "../models/CursoEstudianteModel";
 import { buscarEstudiantes } from "./EstudianteController";
-import { buscarCursos, consultarUno } from "./CursoController";
+import { buscarCursos, consultarTodos } from "./CursoController";
 import { AppDataSource } from "../db/conection";
 import { check, validationResult } from "express-validator";
+import { Curso } from "../models/CursoModel";
 
 
 export const validarIns = ()=>[
@@ -62,16 +63,19 @@ export const buscarInscripcionxCurso = async (req:Request,res:Response):Promise<
 
 export const buscaxCursoResult = async (req:Request,res:Response):Promise<void>=>{
         try{
-            const cursos = await inscripcionRepository.findBy({curso_id:parseInt(req.params.id)});
+            const cursoEstudiantes = await inscripcionRepository.findBy({curso_id:parseInt(req.body.id)});
+            console.log("seleccionado",cursoEstudiantes);
             const estudiantes = await buscarEstudiantes(req,res);
-            if(cursos){
-                res.render('listarInscripciones',{     ///Modificar la pagina
-                    pagina: 'Listado del curso',
-                    cursos,
-                    estudiantes
+            const cursos = await buscarCursos(req,res);
+            if(cursoEstudiantes){
+                res.render('buscarInscripcionesxCursoResult',{     ///Modificar la pagina
+                    pagina: 'Listado de las inscripciones del curso seleccionado',
+                    cursoEstudiantes,
+                    estudiantes,
+                    cursos
                 })
             } else {
-                res.status(400).json({mensaje:'No se ha encontrado registros'});
+                res.status(404).json({mensaje:'No se ha encontrado registros'});
             }
         }catch(err:unknown){
             if(err instanceof Error){
@@ -87,7 +91,6 @@ export const buscaxCursoResult = async (req:Request,res:Response):Promise<void>=
         try{
             const cursos = await buscarCursos(req,res);
             if(cursos){
-                console.log(cursos);
                 res.render('buscarInscripcionesxCurso',{
                     pagina: 'Listado de los cursos',
                     cursos

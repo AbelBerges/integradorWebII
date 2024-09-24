@@ -7,6 +7,8 @@ import { Profesor } from "../models/ProfesorModel";
 import { CursoEstudiante } from "../models/CursoEstudianteModel";
 import { check,validationResult } from "express-validator";
 
+//var cursos:Curso[];
+
 export const validarCurso = ()=>[
     check('nombre').notEmpty().withMessage('El nombre no puede estar vacío')
             .isLength({min:5}).withMessage('El nombre tiene que tener al menos 5 caracteres'),
@@ -46,6 +48,8 @@ export const consultarTodos = async (req:Request,res:Response):Promise<void>=>{
             }
         }
     }
+
+
 
     export const profesorxCurso = async(req:Request,res:Response):Promise<void>=>{
         
