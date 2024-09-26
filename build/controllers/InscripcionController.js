@@ -298,6 +298,7 @@ exports.modifica = modifica;
 const eliminar = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield conection_1.AppDataSource.transaction((transactionalEntityManager) => __awaiter(void 0, void 0, void 0, function* () {
+            console.log(req.params.curso_id, req.params.estudiante_id);
             const inscripcionRepository = transactionalEntityManager.getRepository(CursoEstudianteModel_1.CursoEstudiante);
             const resultado = yield inscripcionRepository.delete({ curso_id: parseInt(req.params.curso_id), estudiante_id: parseInt(req.params.estudiante_id) });
             if (resultado.affected == 1) {
