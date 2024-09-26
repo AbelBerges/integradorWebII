@@ -17,5 +17,7 @@ block contenido
                     tr 
                         each falla in fallas
                             td.px-6.py-4= falla.msg 
+                    tr 
+                        td.px-6.py-4: button(class='w-button bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 cursor-pointer' type='button' onclick =`history.back()`) Volver        
 
 block scripts

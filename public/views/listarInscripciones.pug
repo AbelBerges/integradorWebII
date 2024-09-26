@@ -32,7 +32,7 @@ block contenido
                                 td.px-6.py-4= `${estudiante.nombre} ${estudiante.apellido}`
                         td.px-6.py-4= inscripcion.nota
                         td.px-6.py-4: a.text-blue-500(href=`/inscripciones/modificarInscripcion/${inscripcion.curso_id}/${inscripcion.estudiante_id}`) Editar inscripción
-                                      a.text-red-500.ml-2(href="/inscripciones/creaInscripciones#" onclick =`eliminarInscripcion('${inscripcion.curso_id}/${inscripcion.estudiante_id}')`) Eliminar inscripción
+                                      a.text-red-500.ml-2(href="/inscripciones/listarInscripciones#" onclick =`eliminarInscripcion('${inscripcion.curso_id}/${inscripcion.estudiante_id}')`) Eliminar inscripción
 
 block scripts
     script.

@@ -278,6 +278,7 @@ export const modifica = async (req:Request,res:Response):Promise<void>=>{
 export const eliminar = async (req:Request,res:Response):Promise<void>=>{
     try{
         await AppDataSource.transaction(async transactionalEntityManager=>{
+            console.log(req.params.curso_id,req.params.estudiante_id);
             const inscripcionRepository = transactionalEntityManager.getRepository(CursoEstudiante);
             const resultado = await inscripcionRepository.delete({curso_id:parseInt(req.params.curso_id),estudiante_id:parseInt(req.params.estudiante_id)});
             if(resultado.affected == 1){

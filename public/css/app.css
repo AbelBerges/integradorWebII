@@ -583,6 +583,9 @@ video {
 .w-full {
   width: 100%;
 }
+.w-button {
+  width: 10%;
+}
 .max-w-md {
   max-width: 28rem;
 }
