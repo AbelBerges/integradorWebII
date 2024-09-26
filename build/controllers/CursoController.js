@@ -266,14 +266,6 @@ const insertarxIns = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             }
         }));
         return res.redirect('/inscripciones/creaInscripciones');
-        /*const estudiantes = await buscarEstudiantes(req,res);
-        const cursos = await cursoRepository.find();
-        res.render('creaInscripciones',{
-            pagina: 'Creación de Inscripciones',
-            cursos,
-            estudiantes
-        });
-        return cursos;*/
     }
     catch (err) {
         if (err instanceof Error) {

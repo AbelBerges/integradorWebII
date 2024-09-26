@@ -34,9 +34,12 @@ rutas.get("/modificarProfesor/:id", async (req:Request, res:Response)=>{
              res.render('No se ha encontrado el estudiante');
          }
      }catch(err){
-         if(err instanceof Error){
-             res.render(err.message);
-         }
+        if(err instanceof Error){
+            res.render('capturaErrores',{
+                pagina: 'Error en la grabación de la infromación',
+                falla: err.message
+            });
+        }
      }
  })
 

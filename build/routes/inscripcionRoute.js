@@ -35,7 +35,10 @@ rutas.get("/creaInscripciones", (req, res) => __awaiter(void 0, void 0, void 0, 
     }
     catch (err) {
         if (err instanceof Error) {
-            res.status(500).json(err.message);
+            res.render('capturaErrores', {
+                pagina: 'Error en la grabación de la infromación',
+                falla: err.message
+            });
         }
     }
 }));
@@ -62,7 +65,10 @@ rutas.get("/modificarInscripcion/:curso_id/:estudiante_id", (req, res) => __awai
     }
     catch (err) {
         if (err instanceof Error) {
-            res.render(err.message);
+            res.render('capturaErrores', {
+                pagina: 'Error en la grabación de la infromación',
+                falla: err.message
+            });
         }
     }
 }));

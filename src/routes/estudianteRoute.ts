@@ -36,7 +36,10 @@ ruta.get("/modificarEstudiante/:id", async (req:Request, res:Response)=>{
         }
     }catch(err){
         if(err instanceof Error){
-            res.render(err.message);
+            res.render('capturaErrores',{
+                pagina: 'Error en la grabación de la infromación',
+                falla: err.message
+            });
         }
     }
 })

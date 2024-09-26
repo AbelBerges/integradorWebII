@@ -18,8 +18,11 @@ rutas.get("/creaCursos",async (req:Request,res:Response)=>{
           });
      } catch(err:unknown){
           if(err instanceof Error){
-               res.status(500).json(err.message);
-          }
+               res.render('capturaErrores',{
+                   pagina: 'Error en la grabación de la infromación',
+                   falla: err.message
+               });
+           }
      }
 });
 
@@ -54,8 +57,11 @@ rutas.get("/modificarCurso/:id", async (req:Request,res:Response)=>{
           }
      }catch(err:unknown){
           if(err instanceof Error){
-               res.render(err.message);
-          }
+               res.render('capturaErrores',{
+                   pagina: 'Error en la grabación de la infromación',
+                   falla: err.message
+               });
+           }
      }
 })
 rutas.route("/:id")
