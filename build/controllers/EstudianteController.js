@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.eliminar = exports.modificar = exports.insertarxIns = exports.insertar = exports.buscarEstudiantes = exports.buscarUnEstudiante = exports.consultarUno = exports.consultarTodos = exports.validar = void 0;
+exports.eliminar = exports.modificar = exports.insertarxIns = exports.insertar = exports.buscarEstudiantes = exports.buscarUnEstudiante = exports.consultarUno = exports.consultarTodos = exports.validarMod = exports.validarxIns = exports.validar = void 0;
 const conection_1 = require("../db/conection");
 const EstudianteModel_1 = require("../models/EstudianteModel");
 const CursoController_1 = require("./CursoController");
@@ -39,6 +39,52 @@ const validar = () => [
     }
 ];
 exports.validar = validar;
+const validarxIns = () => [
+    (0, express_validator_1.check)('dni')
+        .notEmpty().withMessage('El DNI no puede estar vacío')
+        .isLength({ min: 7 }).withMessage('El DNI tiene que tener 7 caracteres minímo')
+        .isInt().withMessage('El DNI solo debe tener números enteros'),
+    (0, express_validator_1.check)('nombre').notEmpty().withMessage('El nombre no puede estar vacío')
+        .isLength({ min: 3 }).withMessage('El apellido tiene que tener 3 caracteres mínimo'),
+    (0, express_validator_1.check)('apellido').notEmpty().withMessage('El apellido no puede estar vacío')
+        .isLength({ min: 3 }).withMessage('El apellido tiene que tener 3 caracteres mínimo'),
+    (0, express_validator_1.check)('email').notEmpty().withMessage('El email no puede estar vacío')
+        .isEmail().withMessage('Debe proporcionar un email válido'),
+    (req, res, next) => {
+        const errores = (0, express_validator_1.validationResult)(req);
+        if (!errores.isEmpty()) {
+            res.render('creaEstudiantesIns', {
+                pagina: 'Crear Estudiante',
+                errores: errores.array()
+            });
+        }
+        next();
+    }
+];
+exports.validarxIns = validarxIns;
+const validarMod = () => [
+    (0, express_validator_1.check)('dni')
+        .notEmpty().withMessage('El DNI no puede estar vacío')
+        .isLength({ min: 7 }).withMessage('El DNI tiene que tener 7 caracteres minímo')
+        .isInt().withMessage('El DNI solo debe tener números enteros'),
+    (0, express_validator_1.check)('nombre').notEmpty().withMessage('El nombre no puede estar vacío')
+        .isLength({ min: 3 }).withMessage('El apellido tiene que tener 3 caracteres mínimo'),
+    (0, express_validator_1.check)('apellido').notEmpty().withMessage('El apellido no puede estar vacío')
+        .isLength({ min: 3 }).withMessage('El apellido tiene que tener 3 caracteres mínimo'),
+    (0, express_validator_1.check)('email').notEmpty().withMessage('El email no puede estar vacío')
+        .isEmail().withMessage('Debe proporcionar un email válido'),
+    (req, res, next) => {
+        const errores = (0, express_validator_1.validationResult)(req);
+        if (!errores.isEmpty()) {
+            res.render('capturaErroresMod', {
+                pagina: 'Se detectaron errores al modificar el estudiante',
+                fallas: errores.array()
+            });
+        }
+        next();
+    }
+];
+exports.validarMod = validarMod;
 const consultarTodos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const estudiantes = yield estudianteRepository.find();
@@ -167,7 +213,7 @@ exports.insertar = insertar;
 const insertarxIns = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const errores = (0, express_validator_1.validationResult)(req);
     if (!errores.isEmpty()) {
-        res.render('creaEstudiantesIns', {
+        return res.render('creaEstudiantesIns', {
             pagina: 'Crear Estudiante',
             errores: errores.array()
         });
@@ -192,7 +238,7 @@ const insertarxIns = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             estudiantes,
             cursos
         });
-        return estudiantes;
+        //return estudiantes;
     }
     catch (err) {
         if (err instanceof Error) {
@@ -205,6 +251,13 @@ const insertarxIns = (req, res) => __awaiter(void 0, void 0, void 0, function* (
 });
 exports.insertarxIns = insertarxIns;
 const modificar = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const errores = (0, express_validator_1.validationResult)(req);
+    if (!errores.isEmpty()) {
+        return res.render('capturaErroresMod', {
+            pagina: 'Se detectaron errores al modificar el estudiante',
+            fallas: errores.mapped()
+        });
+    }
     const { dni, nombre, apellido, email } = req.body;
     try {
         const elEstudiante = yield estudianteRepository.findOneBy({ id: parseInt(req.params.id) });
@@ -220,7 +273,10 @@ const modificar = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
     catch (err) {
         if (err instanceof Error) {
-            res.status(500).send(err.message);
+            res.render('capturaErrores', {
+                pagina: 'Error en la grabación de estudiante',
+                falla: err.message
+            });
         }
     }
 });

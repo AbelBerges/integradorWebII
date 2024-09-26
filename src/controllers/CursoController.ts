@@ -11,22 +11,82 @@ import { check,validationResult } from "express-validator";
 
 export const validarCurso = ()=>[
     check('nombre').notEmpty().withMessage('El nombre no puede estar vacío')
-            .isLength({min:5}).withMessage('El nombre tiene que tener al menos 5 caracteres'),
-    check('descripción').notEmpty().withMessage('La descripción no puede estar vacía')
-            .isLength({min:10}).withMessage('La descripción debe tener al menos 10 caracteres'),
+                   .isLength({min:5}).withMessage('El nombre tiene que tener al menos 5 caracteres'),
+    check('descripcion').notEmpty().withMessage('La descripción no puede estar vacía')
+                        .isLength({min:5}).withMessage('La descripción debe tener al menos 5 caracteres'),
     async (req:Request,res:Response,next: NextFunction)=>{
         const errores = validationResult(req);
         const profesores = await repoProfe.find();
         if(!errores.isEmpty()){
             res.render('creaCursos',{
                 pagina: 'Crear Curso',
-                errores: errores.array(),
-                profesores
+                profesores,
+                errores: errores.array()
+                
+            })
+        };
+        next();
+    }
+];
+
+export const validarCursoxPro = ()=>[
+    check('nombre').notEmpty().withMessage('El nombre no puede estar vacío')
+                   .isLength({min:5}).withMessage('El nombre tiene que tener al menos 5 caracteres'),
+    check('descripcion').notEmpty().withMessage('La descripción no puede estar vacía')
+                        .isLength({min:5}).withMessage('La descripción debe tener al menos 5 caracteres'),
+    async (req:Request,res:Response,next: NextFunction)=>{
+        const errores = validationResult(req);
+        const profesores = await repoProfe.find();
+        if(!errores.isEmpty()){
+            res.render('creaProfesoresCurso',{
+                pagina: 'Crear Curso',
+                profesores,
+                errores: errores.array()
+                
+            })
+        };
+        next();
+    }
+];
+
+export const validarCursoxins = ()=>[
+    check('nombre').notEmpty().withMessage('El nombre no puede estar vacío')
+                   .isLength({min:5}).withMessage('El nombre tiene que tener al menos 5 caracteres'),
+    check('descripcion').notEmpty().withMessage('La descripción no puede estar vacía')
+                        .isLength({min:5}).withMessage('La descripción debe tener al menos 5 caracteres'),
+    async (req:Request,res:Response,next: NextFunction)=>{
+        const errores = validationResult(req);
+        const profesores = await repoProfe.find();
+        if(!errores.isEmpty()){
+            res.render('creaCursosIns',{
+                pagina: 'Crear Curso',
+                profesores,
+                errores: errores.array()
+                
+            })
+        };
+        next();
+    }
+];
+
+export const validarCursoMod = ()=>[
+    check('nombre').notEmpty().withMessage('El nombre no puede estar vacío')
+                   .isLength({min:5}).withMessage('El nombre tiene que tener al menos 5 caracteres'),
+    check('descripcion').notEmpty().withMessage('La descripción no puede estar vacía')
+                        .isLength({min:5}).withMessage('La descripción debe tener al menos 5 caracteres'),
+    (req:Request,res:Response,next: NextFunction)=>{
+        const errores = validationResult(req);
+        //const profesores = await repoProfe.find();
+        if(!errores.isEmpty()){
+            res.render('capturaErroresMod',{
+                pagina: 'Se han detectado errores en el ingreso de los datos',
+                fallas: errores.array()
             })
         };
         next();
     }
 ]
+
 const repoProfe = AppDataSource.getRepository(Profesor);
 const cursoRepository = AppDataSource.getRepository(Curso);
 export const consultarTodos = async (req:Request,res:Response):Promise<void>=>{
@@ -134,12 +194,11 @@ export const buscarxProfesor = async(req:Request,res:Response):Promise<void>=>{
 export const insertar = async (req:Request,res:Response):Promise<void>=>{
     const errores = validationResult(req);
     const profesores = await repoProfe.find();
-    console.log(profesores);
         if(!errores.isEmpty()){
            return res.render('creaCursos',{
                     pagina: 'Crear Curso',
-                    errores: errores.array(),
-                    profesores
+                    profesores,
+                    errores: errores.array()
             });
         }
         const {nombre,descripcion,profesor_id} = req.body;
@@ -176,11 +235,13 @@ export const insertar = async (req:Request,res:Response):Promise<void>=>{
 
     export const insertarxIns = async (req:Request,res:Response):Promise<void>=>{
         const errores = validationResult(req);
-        if(!errores.isEmpty()){
-            return res.render('creaCursosIns',{
-                pagina: 'Crear Curso',
-                errores: errores.array()
-            })
+        const profesores = await repoProfe.find();
+            if(!errores.isEmpty()){
+                return res.render('creaCursosIns',{
+                    pagina: 'Crear Curso',
+                    profesores,
+                    errores: errores.array()
+            });
         };
         const {nombre,descripcion,profesor_id} = req.body;
         try{
@@ -195,7 +256,7 @@ export const insertar = async (req:Request,res:Response):Promise<void>=>{
                 }
                 
             });
-            return res.redirect('/cursos/listarCursos');
+            return res.redirect('/inscripciones/creaInscripciones');
             /*const estudiantes = await buscarEstudiantes(req,res);
             const cursos = await cursoRepository.find();
             res.render('creaInscripciones',{
@@ -216,6 +277,14 @@ export const insertar = async (req:Request,res:Response):Promise<void>=>{
 
 
 export const modificar = async (req:Request,res:Response):Promise<void>=>{
+    const errores = validationResult(req);
+        //const profesores = await repoProfe.find();
+    if(!errores.isEmpty){
+        return res.render('capturaErroresMod',{
+                pagina: 'Se han detectado errores en el ingreso de los datos',
+                fallas: errores.mapped()
+        })
+    }
         try{
            console.log("Ver el contenido de req.body ", req.body);
            const curso = await cursoRepository.findOneBy({id:parseInt(req.params.id)}); 
@@ -228,7 +297,10 @@ export const modificar = async (req:Request,res:Response):Promise<void>=>{
            }
         }catch(err:unknown){
             if(err instanceof Error){
-                res.status(500).send(err.message);
+                res.render('capturaErrores',{
+                    pagina: 'Error en la grabación de la infromación',
+                    falla: err.message
+                });
             }
         }
     }

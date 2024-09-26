@@ -25,6 +25,20 @@ export const validarIns = ()=>[
     }
 ];
 
+export const validarInsMod = ()=>[
+    check('nota').isFloat().withMessage('La nota debe tener un valor númerico '),
+    (req:Request,res:Response,next: NextFunction)=>{
+        const errores = validationResult(req);
+        if(!errores.isEmpty()){
+            res.render('capturaErroresMod',{
+                pagina: 'Se han detectado errores en el ingreso de los datos',
+                fallas: errores.array()
+            });
+        };
+        next();
+    }
+];
+
 const inscripcionRepository = AppDataSource.getRepository(CursoEstudiante);
 export const buscarTodos = async (req:Request,res:Response):Promise<void>=>{
         try{
@@ -167,7 +181,7 @@ export const agregar = async (req:Request,res:Response):Promise<void>=>{
     const estudiantes = await buscarEstudiantes(req,res);
     const cursos = await buscarCursos(req,res);
         if(!errores.isEmpty()){
-            res.render('creaInscripciones',{
+            return res.render('creaInscripciones',{
                 pagina: 'Crear inscripción',
                 errores: errores.array(),
                 cursos,
@@ -230,13 +244,16 @@ export const buscarUno = async (req:Request,res:Response):Promise<CursoEstudiant
 }
 
 export const modifica = async (req:Request,res:Response):Promise<void>=>{
-    const errores = validationResult(req);
+    (req:Request,res:Response,next: NextFunction)=>{
+        const errores = validationResult(req);
         if(!errores.isEmpty()){
-            res.render('creaInscripciones',{
-                pagina: 'Crear inscripción',
-                errores: errores.array()
+            return res.render('capturaErroresMod',{
+                pagina: 'Se han detectado errores en el ingreso de los datos',
+                fallas: errores.array()
             });
         };
+        next();
+    }
     const {curso_id,estudiante_id} = req.params;
     const {nota} = req.body; 
     try{

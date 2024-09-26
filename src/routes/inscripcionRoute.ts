@@ -1,7 +1,7 @@
 import express from "express";
 import { Request, Response } from "express";
 import { agregar, buscarTodos, buscaxCurso, eliminar, buscaxCursoResult, 
-        modifica, buscarUno, buscarxEstudiante, buscarxEstudianteResult } from "../controllers/InscripcionController";
+        modifica, buscarUno, buscarxEstudiante, buscarxEstudianteResult, validarInsMod } from "../controllers/InscripcionController";
 import { buscarUnEstudiante, buscarEstudiantes } from "../controllers/EstudianteController";
 import { buscarCursos } from "../controllers/CursoController";
 import { validarIns } from "../controllers/InscripcionController";
@@ -58,10 +58,7 @@ rutas.get("/modificarInscripcion/:curso_id/:estudiante_id",async (req:Request,re
         }
     }
 });
-rutas.route("/:curso_id/:estudiante_id").put(validarIns(), modifica);
-
-//rutas.get("/xCurso/:id",buscaxCurso);
-//rutas.get("/xEstudiante/:id",buscarxEstudiante);
+rutas.route("/:curso_id/:estudiante_id").put(validarInsMod(), modifica);
 
 rutas.route("/:curso_id/:estudiante_id").delete(eliminar);
 export default rutas;

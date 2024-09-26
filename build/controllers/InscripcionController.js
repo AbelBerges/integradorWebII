@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.eliminar = exports.modifica = exports.buscarUno = exports.agregar = exports.buscaxCurso = exports.buscaxCursoResult = exports.buscarxEstudianteResult = exports.buscarxEstudiante = exports.buscarTodos = exports.validarIns = void 0;
+exports.eliminar = exports.modifica = exports.buscarUno = exports.agregar = exports.buscaxCurso = exports.buscaxCursoResult = exports.buscarxEstudianteResult = exports.buscarxEstudiante = exports.buscarTodos = exports.validarInsMod = exports.validarIns = void 0;
 const CursoEstudianteModel_1 = require("../models/CursoEstudianteModel");
 const EstudianteController_1 = require("./EstudianteController");
 const CursoController_1 = require("./CursoController");
@@ -34,6 +34,21 @@ const validarIns = () => [
     })
 ];
 exports.validarIns = validarIns;
+const validarInsMod = () => [
+    (0, express_validator_1.check)('nota').isFloat().withMessage('La nota debe tener un valor númerico '),
+    (req, res, next) => {
+        const errores = (0, express_validator_1.validationResult)(req);
+        if (!errores.isEmpty()) {
+            res.render('capturaErroresMod', {
+                pagina: 'Se han detectado errores en el ingreso de los datos',
+                fallas: errores.array()
+            });
+        }
+        ;
+        next();
+    }
+];
+exports.validarInsMod = validarInsMod;
 const inscripcionRepository = conection_1.AppDataSource.getRepository(CursoEstudianteModel_1.CursoEstudiante);
 const buscarTodos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -178,7 +193,7 @@ const agregar = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const estudiantes = yield (0, EstudianteController_1.buscarEstudiantes)(req, res);
     const cursos = yield (0, CursoController_1.buscarCursos)(req, res);
     if (!errores.isEmpty()) {
-        res.render('creaInscripciones', {
+        return res.render('creaInscripciones', {
             pagina: 'Crear inscripción',
             errores: errores.array(),
             cursos,
@@ -246,14 +261,17 @@ const buscarUno = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.buscarUno = buscarUno;
 const modifica = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const errores = (0, express_validator_1.validationResult)(req);
-    if (!errores.isEmpty()) {
-        res.render('creaInscripciones', {
-            pagina: 'Crear inscripción',
-            errores: errores.array()
-        });
-    }
-    ;
+    (req, res, next) => {
+        const errores = (0, express_validator_1.validationResult)(req);
+        if (!errores.isEmpty()) {
+            return res.render('capturaErroresMod', {
+                pagina: 'Se han detectado errores en el ingreso de los datos',
+                fallas: errores.array()
+            });
+        }
+        ;
+        next();
+    };
     const { curso_id, estudiante_id } = req.params;
     const { nota } = req.body;
     try {

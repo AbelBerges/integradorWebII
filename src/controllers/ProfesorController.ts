@@ -23,6 +23,42 @@ export const validarProfe = ()=>[
     }
 ]
 
+export const validarProfexCurso = ()=>[
+    check('nombre').notEmpty().withMessage('El nombre no puede estar vacío').isLength({min:3}),
+    check('apellido').notEmpty().withMessage('El apellido no puede estar vacío').isLength({min:3}),
+    check('email').notEmpty().withMessage('El email no puede estar vacío').isEmail(),
+    check('profesion').notEmpty().withMessage('La profesión no puede estar vacío').isLength({min:5}),
+    check('telefono').notEmpty().withMessage('El teléfono no puede estar vacío').isInt().withMessage('El teléfono deben ser solo números'),
+    (req:Request,res:Response,next: NextFunction)=>{
+        const errores = validationResult(req);
+        if(!errores.isEmpty()){
+            res.render('creaProfesoresCurso',{
+                pagina: 'Crear Profesor',
+                errores: errores.array()
+            });
+        };
+        next();
+    }
+]
+
+export const validarProfeMod = ()=>[
+    check('nombre').notEmpty().withMessage('El nombre no puede estar vacío').isLength({min:3}),
+    check('apellido').notEmpty().withMessage('El apellido no puede estar vacío').isLength({min:3}),
+    check('email').notEmpty().withMessage('El email no puede estar vacío').isEmail(),
+    check('profesion').notEmpty().withMessage('La profesión no puede estar vacío').isLength({min:5}),
+    check('telefono').notEmpty().withMessage('El teléfono no puede estar vacío').isInt().withMessage('El teléfono deben ser solo números'),
+    (req:Request,res:Response,next: NextFunction)=>{
+        const errores = validationResult(req);
+        if(!errores.isEmpty()){
+            res.render('capturaErroresMod',{
+                pagina: 'Se detectaron errores al modificar el Profesor',
+                fallas: errores.array()
+            });
+        };
+        next();
+    }
+]
+
 const profesorRepository = AppDataSource.getRepository(Profesor);
 export const consultarTodos =  async (req:Request,res:Response):Promise<void>=>{
         try{
@@ -124,7 +160,7 @@ export const buscarProfe = async (req:Request,res:Response):Promise<Profesor[] |
     export const insertarxCurso = async (req:Request,res:Response):Promise<void>=>{
         const errores = validationResult(req);
         if(!errores.isEmpty()){
-            return res.render('creaProfesores',{
+            return res.render('creaProfesoresCurso',{
                 pagina: 'Crear Profesor',
                 errores: errores.array()
             });
@@ -142,11 +178,6 @@ export const buscarProfe = async (req:Request,res:Response):Promise<Profesor[] |
                     }
                 })
                 return res.redirect('/cursos/creaCursos');
-                /*const profesores = await profesorRepository.find();
-                res.render('creaCursos',{
-                    pagina: 'Crear un Profesor',
-                    profesores
-                });*/
                 
             }catch(err:unknown){
                 if(err instanceof Error){
@@ -160,6 +191,13 @@ export const buscarProfe = async (req:Request,res:Response):Promise<Profesor[] |
 
 
 export const modificar = async (req:Request,res:Response):Promise<void>=>{
+    const errores = validationResult(req);
+    if(!errores.isEmpty){
+        res.render('capturaErroresMod',{
+            pagina: 'Se detectaron errores al modificar el Profesor',
+            fallas: errores.mapped()
+        })
+    }
         try{
             const profesor = await profesorRepository.findOneBy({id:parseInt(req.params.id)});
             if(profesor){
@@ -171,7 +209,10 @@ export const modificar = async (req:Request,res:Response):Promise<void>=>{
             }
         }catch(err:unknown){
             if(err instanceof Error){
-                res.status(500).send(err.message);
+                res.render('capturaErrores',{
+                    pagina: 'Error en la grabación de la información',
+                    falla: err.message
+                });
             }
         }
     }

@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import express from "express";
 import { validar } from "../controllers/EstudianteController";
-import { consultarTodos, consultarUno, eliminar, insertar, modificar, buscarUnEstudiante, insertarxIns } from "../controllers/EstudianteController";
+import { consultarTodos, consultarUno, eliminar, insertar, modificar, buscarUnEstudiante, 
+        insertarxIns, validarMod, validarxIns } from "../controllers/EstudianteController";
 const ruta = express.Router();
 
 
@@ -20,7 +21,7 @@ ruta.get('/creaEstudiantesIns',(req:Request,res:Response)=>{
     })
 })
 
-ruta.post("/xIns", insertarxIns);
+ruta.post("/xIns", validarxIns(), insertarxIns);
 
 ruta.get("/modificarEstudiante/:id", async (req:Request, res:Response)=>{
     try{
@@ -42,7 +43,7 @@ ruta.get("/modificarEstudiante/:id", async (req:Request, res:Response)=>{
 
 ruta.route("/:id")
     .get(consultarUno)
-    .put(validar(),modificar)
+    .put(validarMod(),modificar)
     .delete(eliminar);
 
 export default ruta;

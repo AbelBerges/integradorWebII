@@ -29,6 +29,52 @@ export const validar = ()=>[
     }
 ]
 
+export const validarxIns = ()=>[
+    check('dni')
+            .notEmpty().withMessage('El DNI no puede estar vacío')
+            .isLength({min:7}).withMessage('El DNI tiene que tener 7 caracteres minímo')
+            .isInt().withMessage('El DNI solo debe tener números enteros'),
+    check('nombre').notEmpty().withMessage('El nombre no puede estar vacío')
+                .isLength({min: 3}).withMessage('El apellido tiene que tener 3 caracteres mínimo'),
+    check('apellido').notEmpty().withMessage('El apellido no puede estar vacío')
+                .isLength({min: 3}).withMessage('El apellido tiene que tener 3 caracteres mínimo'),
+    check('email').notEmpty().withMessage('El email no puede estar vacío')
+                .isEmail().withMessage('Debe proporcionar un email válido'),
+    (req:Request,res:Response,next:NextFunction)=>{
+        const errores = validationResult(req);
+        if(!errores.isEmpty()){
+            res.render('creaEstudiantesIns',{
+                pagina: 'Crear Estudiante',
+                errores: errores.array()
+            });
+        }
+        next();
+    }
+]
+
+
+export const validarMod = ()=>[
+    check('dni')
+            .notEmpty().withMessage('El DNI no puede estar vacío')
+            .isLength({min:7}).withMessage('El DNI tiene que tener 7 caracteres minímo')
+            .isInt().withMessage('El DNI solo debe tener números enteros'),
+    check('nombre').notEmpty().withMessage('El nombre no puede estar vacío')
+            .isLength({min: 3}).withMessage('El apellido tiene que tener 3 caracteres mínimo'),
+    check('apellido').notEmpty().withMessage('El apellido no puede estar vacío')
+            .isLength({min: 3}).withMessage('El apellido tiene que tener 3 caracteres mínimo'),
+    check('email').notEmpty().withMessage('El email no puede estar vacío')
+            .isEmail().withMessage('Debe proporcionar un email válido'),
+    (req:Request,res:Response,next:NextFunction)=>{
+    const errores = validationResult(req);
+    if(!errores.isEmpty()){
+        res.render('capturaErroresMod',{
+            pagina: 'Se detectaron errores al modificar el estudiante',
+            fallas: errores.array()
+        });
+    }
+    next();
+    }
+];
 
 export const consultarTodos = async (req:Request,res:Response):Promise<void>=>{
         try{
@@ -147,10 +193,10 @@ export const insertar = async (req:Request,res:Response):Promise<void>=>{
     }
 
     //probar si funciona como void
-    export const insertarxIns = async (req:Request,res:Response):Promise<Estudiante[] | null |undefined>=>{
+    export const insertarxIns = async (req:Request,res:Response):Promise<void>=>{
         const errores = validationResult(req);
             if(!errores.isEmpty()){
-                res.render('creaEstudiantesIns',{
+                return res.render('creaEstudiantesIns',{
                 pagina: 'Crear Estudiante',
                 errores: errores.array()
         });
@@ -174,7 +220,7 @@ export const insertar = async (req:Request,res:Response):Promise<void>=>{
                    estudiantes,
                    cursos
                });
-               return estudiantes;
+               //return estudiantes;
            }catch(err:unknown){
                if(err instanceof Error){
                 res.render('capturaErrores',{
@@ -187,6 +233,13 @@ export const insertar = async (req:Request,res:Response):Promise<void>=>{
 
 
 export const modificar = async (req:Request,res:Response):Promise<void>=>{
+    const errores = validationResult(req);
+    if(!errores.isEmpty()){
+       return res.render('capturaErroresMod',{
+            pagina: 'Se detectaron errores al modificar el estudiante',
+            fallas: errores.mapped()
+        });
+    }
         const {dni,nombre,apellido,email} = req.body;
         try{
             const elEstudiante = await estudianteRepository.findOneBy({id:parseInt(req.params.id)});
@@ -200,8 +253,11 @@ export const modificar = async (req:Request,res:Response):Promise<void>=>{
             }
         }catch(err:unknown){
             if(err instanceof Error){
-                res.status(500).send(err.message);
-            }
+                res.render('capturaErrores',{
+                    pagina: 'Error en la grabación de estudiante',
+                    falla: err.message
+                });
+               }
         }
     }
 

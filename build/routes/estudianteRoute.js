@@ -28,7 +28,7 @@ ruta.get('/creaEstudiantesIns', (req, res) => {
         pagina: 'Crear Estudiante'
     });
 });
-ruta.post("/xIns", EstudianteController_2.insertarxIns);
+ruta.post("/xIns", (0, EstudianteController_2.validarxIns)(), EstudianteController_2.insertarxIns);
 ruta.get("/modificarEstudiante/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const estudiante = yield (0, EstudianteController_2.consultarUno)(req, res);
@@ -50,6 +50,6 @@ ruta.get("/modificarEstudiante/:id", (req, res) => __awaiter(void 0, void 0, voi
 }));
 ruta.route("/:id")
     .get(EstudianteController_2.consultarUno)
-    .put((0, EstudianteController_1.validar)(), EstudianteController_2.modificar)
+    .put((0, EstudianteController_2.validarMod)(), EstudianteController_2.modificar)
     .delete(EstudianteController_2.eliminar);
 exports.default = ruta;

@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.eliminar = exports.modificar = exports.insertarxCurso = exports.insertar = exports.buscarProfe = exports.buscarUnProfe = exports.consultarUno = exports.consultarTodos = exports.validarProfe = void 0;
+exports.eliminar = exports.modificar = exports.insertarxCurso = exports.insertar = exports.buscarProfe = exports.buscarUnProfe = exports.consultarUno = exports.consultarTodos = exports.validarProfeMod = exports.validarProfexCurso = exports.validarProfe = void 0;
 const conection_1 = require("../db/conection");
 const ProfesorModel_1 = require("../models/ProfesorModel");
 const CursoModel_1 = require("../models/CursoModel");
@@ -33,6 +33,44 @@ const validarProfe = () => [
     }
 ];
 exports.validarProfe = validarProfe;
+const validarProfexCurso = () => [
+    (0, express_validator_1.check)('nombre').notEmpty().withMessage('El nombre no puede estar vacío').isLength({ min: 3 }),
+    (0, express_validator_1.check)('apellido').notEmpty().withMessage('El apellido no puede estar vacío').isLength({ min: 3 }),
+    (0, express_validator_1.check)('email').notEmpty().withMessage('El email no puede estar vacío').isEmail(),
+    (0, express_validator_1.check)('profesion').notEmpty().withMessage('La profesión no puede estar vacío').isLength({ min: 5 }),
+    (0, express_validator_1.check)('telefono').notEmpty().withMessage('El teléfono no puede estar vacío').isInt().withMessage('El teléfono deben ser solo números'),
+    (req, res, next) => {
+        const errores = (0, express_validator_1.validationResult)(req);
+        if (!errores.isEmpty()) {
+            res.render('creaProfesoresCurso', {
+                pagina: 'Crear Profesor',
+                errores: errores.array()
+            });
+        }
+        ;
+        next();
+    }
+];
+exports.validarProfexCurso = validarProfexCurso;
+const validarProfeMod = () => [
+    (0, express_validator_1.check)('nombre').notEmpty().withMessage('El nombre no puede estar vacío').isLength({ min: 3 }),
+    (0, express_validator_1.check)('apellido').notEmpty().withMessage('El apellido no puede estar vacío').isLength({ min: 3 }),
+    (0, express_validator_1.check)('email').notEmpty().withMessage('El email no puede estar vacío').isEmail(),
+    (0, express_validator_1.check)('profesion').notEmpty().withMessage('La profesión no puede estar vacío').isLength({ min: 5 }),
+    (0, express_validator_1.check)('telefono').notEmpty().withMessage('El teléfono no puede estar vacío').isInt().withMessage('El teléfono deben ser solo números'),
+    (req, res, next) => {
+        const errores = (0, express_validator_1.validationResult)(req);
+        if (!errores.isEmpty()) {
+            res.render('capturaErroresMod', {
+                pagina: 'Se detectaron errores al modificar el Profesor',
+                fallas: errores.array()
+            });
+        }
+        ;
+        next();
+    }
+];
+exports.validarProfeMod = validarProfeMod;
 const profesorRepository = conection_1.AppDataSource.getRepository(ProfesorModel_1.Profesor);
 const consultarTodos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -142,7 +180,7 @@ exports.insertar = insertar;
 const insertarxCurso = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const errores = (0, express_validator_1.validationResult)(req);
     if (!errores.isEmpty()) {
-        return res.render('creaProfesores', {
+        return res.render('creaProfesoresCurso', {
             pagina: 'Crear Profesor',
             errores: errores.array()
         });
@@ -162,11 +200,6 @@ const insertarxCurso = (req, res) => __awaiter(void 0, void 0, void 0, function*
             }
         }));
         return res.redirect('/cursos/creaCursos');
-        /*const profesores = await profesorRepository.find();
-        res.render('creaCursos',{
-            pagina: 'Crear un Profesor',
-            profesores
-        });*/
     }
     catch (err) {
         if (err instanceof Error) {
@@ -179,6 +212,13 @@ const insertarxCurso = (req, res) => __awaiter(void 0, void 0, void 0, function*
 });
 exports.insertarxCurso = insertarxCurso;
 const modificar = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const errores = (0, express_validator_1.validationResult)(req);
+    if (!errores.isEmpty) {
+        res.render('capturaErroresMod', {
+            pagina: 'Se detectaron errores al modificar el Profesor',
+            fallas: errores.mapped()
+        });
+    }
     try {
         const profesor = yield profesorRepository.findOneBy({ id: parseInt(req.params.id) });
         if (profesor) {
@@ -192,7 +232,10 @@ const modificar = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
     catch (err) {
         if (err instanceof Error) {
-            res.status(500).send(err.message);
+            res.render('capturaErrores', {
+                pagina: 'Error en la grabación de la información',
+                falla: err.message
+            });
         }
     }
 });

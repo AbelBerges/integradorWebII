@@ -33,7 +33,7 @@ rutas.get("/creaCursos", (req, res) => __awaiter(void 0, void 0, void 0, functio
         }
     }
 }));
-rutas.post("/creaCursos", (0, CursoController_1.validarCurso)(), CursoController_1.insertar);
+rutas.post("/", (0, CursoController_1.validarCurso)(), CursoController_1.insertar);
 //rutas.get("/xProfesor/:id",cursoControlador.buscarxProfesor);
 rutas.get("/creaCursosIns", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const profesores = yield (0, ProfesorController_1.buscarProfe)(req, res);
@@ -42,7 +42,7 @@ rutas.get("/creaCursosIns", (req, res) => __awaiter(void 0, void 0, void 0, func
         profesores
     });
 }));
-rutas.post("/xIns", CursoController_1.insertarxIns);
+rutas.post("/xIns", (0, CursoController_1.validarCursoxins)(), CursoController_1.insertarxIns);
 rutas.get("/modificarCurso/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const curso = yield (0, CursoController_1.consultarUno)(req, res);
@@ -68,7 +68,7 @@ rutas.get("/modificarCurso/:id", (req, res) => __awaiter(void 0, void 0, void 0,
     }
 }));
 rutas.route("/:id")
-    .put(CursoController_1.modificar)
+    .put((0, CursoController_1.validarCursoMod)(), CursoController_1.modificar)
     .get(CursoController_1.consultarUno)
     .delete(CursoController_1.eliminar);
 exports.default = rutas;

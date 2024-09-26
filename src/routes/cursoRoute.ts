@@ -1,6 +1,7 @@
 import express from "express";
 import { Request, Response } from "express";
-import { consultarTodos, consultarUno, eliminar, insertar, insertarxIns, modificar, profesorxCurso, buscarxProfesor, validarCurso} from "../controllers/CursoController";
+import { consultarTodos, consultarUno, eliminar, insertar, insertarxIns, modificar, profesorxCurso, 
+          buscarxProfesor, validarCurso, validarCursoMod, validarCursoxPro, validarCursoxins} from "../controllers/CursoController";
 import { buscarProfe, buscarUnProfe } from "../controllers/ProfesorController";
 const rutas = express.Router();
 
@@ -22,7 +23,7 @@ rutas.get("/creaCursos",async (req:Request,res:Response)=>{
      }
 });
 
-rutas.post("/creaCursos", validarCurso(), insertar);
+rutas.post("/", validarCurso(), insertar);
 //rutas.get("/xProfesor/:id",cursoControlador.buscarxProfesor);
 rutas.get("/creaCursosIns",async (req:Request,res:Response)=>{
      const profesores = await buscarProfe(req,res);
@@ -32,7 +33,7 @@ rutas.get("/creaCursosIns",async (req:Request,res:Response)=>{
      })
 })
 
-rutas.post("/xIns",insertarxIns);
+rutas.post("/xIns",validarCursoxins(), insertarxIns);
 
 
 rutas.get("/modificarCurso/:id", async (req:Request,res:Response)=>{
@@ -58,7 +59,7 @@ rutas.get("/modificarCurso/:id", async (req:Request,res:Response)=>{
      }
 })
 rutas.route("/:id")
-     .put(modificar)
+     .put(validarCursoMod(),modificar)
      .get(consultarUno)
      .delete(eliminar);
 

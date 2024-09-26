@@ -66,8 +66,6 @@ rutas.get("/modificarInscripcion/:curso_id/:estudiante_id", (req, res) => __awai
         }
     }
 }));
-rutas.route("/:curso_id/:estudiante_id").put((0, InscripcionController_2.validarIns)(), InscripcionController_1.modifica);
-//rutas.get("/xCurso/:id",buscaxCurso);
-//rutas.get("/xEstudiante/:id",buscarxEstudiante);
+rutas.route("/:curso_id/:estudiante_id").put((0, InscripcionController_1.validarInsMod)(), InscripcionController_1.modifica);
 rutas.route("/:curso_id/:estudiante_id").delete(InscripcionController_1.eliminar);
 exports.default = rutas;
